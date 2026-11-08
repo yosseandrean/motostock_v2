@@ -13,12 +13,9 @@ const CATEGORY_LABELS: Record<ChecklistCategoryKey, string> = {
   "empty-chassis": "Nomor Rangka Kosong",
   "duplicate-chassis": "Nomor Rangka Duplikat",
   "duplicate-license-plate": "Plat Duplikat",
-  "missing-sales-person": "Sales Person Kosong pada Unit Terjual",
   "missing-color": "Warna Kosong",
   "missing-name-on-registration": "Nama di STNK Kosong",
   "case-split-sales-person": "Sales Person Beda Kapital",
-  "loss-making-sales": "Penjualan Rugi",
-  "stale-units": "Unit Stale",
 };
 
 export default async function ChecklistPage() {
@@ -29,16 +26,12 @@ export default async function ChecklistPage() {
       model: true,
       licensePlate: true,
       color: true,
-      buyPrice: true,
-      cost: true,
-      sellPrice: true,
-      dateBought: true,
       salesPerson: true,
       nameOnRegistration: true,
       chassisSerialNumber: true,
     },
   });
-  const categories = computeChecklist(units, new Date());
+  const categories = computeChecklist(units);
 
   return (
     <main className="inventory-shell">

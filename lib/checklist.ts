@@ -1,5 +1,5 @@
 /**
- * Data-issues checklist computations: nine anomaly categories, each listing
+ * Data-issues checklist computations: six anomaly categories, each listing
  * the affected Units so the owner can clean them up by hand. Nothing here
  * mutates data — it only reads.
  *
@@ -7,21 +7,14 @@
  * of truth, matching the dashboard and sales modules.
  */
 
-import { ageInDays, isStale } from "@/lib/dashboard";
-import { formatIDR } from "@/lib/format";
-import { grossProfit, isSold } from "@/lib/unit";
-
-/** The nine anomaly categories, in the order they are shown. */
+/** The six anomaly categories, in the order they are shown. */
 export const CHECKLIST_CATEGORY_KEYS = [
   "empty-chassis",
   "duplicate-chassis",
   "duplicate-license-plate",
-  "missing-sales-person",
   "missing-color",
   "missing-name-on-registration",
   "case-split-sales-person",
-  "loss-making-sales",
-  "stale-units",
 ] as const;
 
 export type ChecklistCategoryKey = (typeof CHECKLIST_CATEGORY_KEYS)[number];
@@ -33,10 +26,6 @@ export type ChecklistUnit = {
   model: string;
   licensePlate: string;
   color: string;
-  buyPrice: number;
-  cost: number;
-  sellPrice: number | null;
-  dateBought: Date;
   salesPerson: string | null;
   nameOnRegistration: string | null;
   chassisSerialNumber: string | null;
@@ -111,7 +100,6 @@ function findDuplicates(
  */
 export function computeChecklist(
   units: readonly ChecklistUnit[],
-  now: Date,
 ): ChecklistCategory[] {
   const categories: ChecklistCategory[] = [];
 
@@ -142,18 +130,6 @@ export function computeChecklist(
   );
   if (duplicatePlates.length > 0) {
     categories.push({ key: "duplicate-license-plate", items: duplicatePlates });
-  }
-
-  // Missing Sales Person on Sold Units.
-  const missingSalesPerson = units
-    .filter((unit) => isSold(unit) && isEmpty(unit.salesPerson))
-    .map((unit) => toItem(unit, ""))
-    .sort(byId);
-  if (missingSalesPerson.length > 0) {
-    categories.push({
-      key: "missing-sales-person",
-      items: missingSalesPerson,
-    });
   }
 
   // Missing Color.
@@ -206,31 +182,6 @@ export function computeChecklist(
   }
   if (caseSplits.length > 0) {
     categories.push({ key: "case-split-sales-person", items: caseSplits });
-  }
-
-  // Loss-making sales: Sold Units whose Gross Profit is below zero.
-  const losses = units
-    .filter((unit) => isSold(unit))
-    .map((unit) => ({
-      unit,
-      profit: grossProfit(unit) as number,
-    }))
-    .filter(({ profit }) => profit < 0)
-    .sort((a, b) => a.profit - b.profit || a.unit.id - b.unit.id)
-    .map(({ unit, profit }) => toItem(unit, formatIDR(profit)));
-  if (losses.length > 0) {
-    categories.push({ key: "loss-making-sales", items: losses });
-  }
-
-  // Stale Units: In Stock Units whose Age exceeds the stale threshold.
-  const stale = units
-    .filter((unit) => !isSold(unit))
-    .map((unit) => ({ unit, age: ageInDays(unit.dateBought, now) }))
-    .filter(({ age }) => isStale(age))
-    .sort((a, b) => b.age - a.age || a.unit.id - b.unit.id)
-    .map(({ unit, age }) => toItem(unit, `${age} hari`));
-  if (stale.length > 0) {
-    categories.push({ key: "stale-units", items: stale });
   }
 
   return categories;
