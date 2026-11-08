@@ -144,12 +144,30 @@ describe("sales dashboard page", () => {
     expect(html).not.toContain("SUZUKI");
   });
 
-  it("renders a monthly trend table", async () => {
-    await seedUnit();
+  it("serializes the monthly trend chart data into the page", async () => {
+    await seedUnit(); // buy 10,000,000 + 500,000, sell 13,000,000
 
     const html = await renderPage();
 
     expect(html).toContain("Tren Bulanan");
-    expect(html).toContain(monthLabel(monthKey(new Date())));
+    // The old server-rendered table is gone; the trend is now a Recharts chart.
+    expect(html).not.toContain('<th scope="col">Bulan</th>');
+    expect(html).toContain("trend-chart");
+
+    const match = html.match(
+      /<script type="application\/json" id="sales-trend">(.*?)<\/script>/,
+    );
+    expect(match).not.toBeNull();
+    const trend = JSON.parse(match![1]);
+
+    const key = monthKey(new Date());
+    expect(trend).toEqual([
+      {
+        key,
+        label: monthLabel(key),
+        revenue: 13_000_000,
+        grossProfit: 2_500_000,
+      },
+    ]);
   });
 });

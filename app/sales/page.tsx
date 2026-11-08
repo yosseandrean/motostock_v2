@@ -8,6 +8,7 @@ import {
   SALES_PRESETS,
 } from "@/lib/sales";
 import type { SalesBreakdownRow, SalesPresetKey } from "@/lib/sales";
+import { MonthlyTrendChart } from "./MonthlyTrendChart";
 
 export const metadata: Metadata = {
   title: "Dashboard Penjualan — Motostock",
@@ -196,26 +197,14 @@ export default async function SalesDashboardPage({
             Tidak ada data.
           </p>
         ) : (
-          <div className="table-wrap">
-            <table className="unit-table">
-              <thead>
-                <tr>
-                  <th scope="col">Bulan</th>
-                  <th scope="col">Pendapatan</th>
-                  <th scope="col">Laba Kotor</th>
-                </tr>
-              </thead>
-              <tbody>
-                {summary.trend.map((point) => (
-                  <tr key={point.key}>
-                    <td>{point.label}</td>
-                    <td>{formatIDR(point.revenue)}</td>
-                    <td>{formatIDR(point.grossProfit)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <script
+              type="application/json"
+              id="sales-trend"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(summary.trend) }}
+            />
+            <MonthlyTrendChart data={summary.trend} />
+          </>
         )}
       </section>
 
