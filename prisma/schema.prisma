@@ -1,0 +1,42 @@
+// Prisma schema for Motostock.
+//
+// The `Unit` model is a flat record mapping the 16 columns of the inventory
+// CSV (see ADR-0001). Field names follow the project glossary in GLOSSARY.md,
+// so the CSV column "Year" maps to `modelYear` (Model Year).
+//
+// Identity is lenient on purpose (ADR-0003): chassis/engine serial numbers are
+// nullable and carry no unique constraint because the source data contains
+// duplicates and empty values.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Unit {
+  id                  Int       @id @default(autoincrement())
+  brand               String
+  model               String
+  modelYear           String
+  licensePlate        String
+  color               String
+  buyPrice            Int
+  cost                Int
+  sellPrice           Int?
+  dateBought          DateTime
+  dateSold            DateTime?
+  salesPerson         String?
+  nameOnRegistration  String?
+  chassisSerialNumber String?
+  engineSerialNumber  String?
+  boughtFrom          String?
+  notes               String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@map("units")
+}
