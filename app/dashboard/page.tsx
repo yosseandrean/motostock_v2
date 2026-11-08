@@ -183,11 +183,6 @@ export default async function InventoryDashboardPage() {
         <h2 className="section-title">Per Model</h2>
         <BreakdownTable label="Model" rows={dashboard.byModel} />
       </section>
-
-      <section className="dashboard-section">
-        <h2 className="section-title">Per Warna</h2>
-        <BreakdownTable label="Warna" rows={dashboard.byColor} />
-      </section>
     </main>
   );
 }

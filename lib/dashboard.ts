@@ -1,6 +1,6 @@
 /**
  * Inventory dashboard computations: In Stock count, Invested, aging buckets,
- * Stale Units and Brand/Model/Color breakdowns. Kept as pure functions so the
+ * Stale Units and Brand/Model breakdowns. Kept as pure functions so the
  * dashboard page and its tests share one source of truth.
  */
 
@@ -61,7 +61,6 @@ export type Dashboard = {
   staleUnits: StaleUnit[];
   byBrand: BreakdownRow[];
   byModel: BreakdownRow[];
-  byColor: BreakdownRow[];
 };
 
 /** Age in whole calendar days: the number of days since Date Bought. */
@@ -139,7 +138,6 @@ export function computeDashboard(
   const staleUnits: StaleUnit[] = [];
   const brandMap = new Map<string, { count: number; invested: number }>();
   const modelMap = new Map<string, { count: number; invested: number }>();
-  const colorMap = new Map<string, { count: number; invested: number }>();
 
   let totalInvested = 0;
   for (const unit of inStock) {
@@ -167,7 +165,6 @@ export function computeDashboard(
 
     accumulate(brandMap, unit.brand, value);
     accumulate(modelMap, unit.model, value);
-    accumulate(colorMap, unit.color, value);
   }
 
   staleUnits.sort((a, b) => b.age - a.age || a.brand.localeCompare(b.brand));
@@ -182,6 +179,5 @@ export function computeDashboard(
     staleUnits,
     byBrand: toBreakdown(brandMap),
     byModel: toBreakdown(modelMap),
-    byColor: toBreakdown(colorMap),
   };
 }

@@ -104,7 +104,7 @@ describe("inventory dashboard page", () => {
     expect(html).toContain("24.000.000");
   });
 
-  it("breaks down In Stock Units by Brand, Model and Color", async () => {
+  it("breaks down In Stock Units by Brand and Model", async () => {
     await seedUnit({ brand: "HONDA", model: "BEAT", color: "MERAH", buyPrice: 10_000_000, cost: 500_000 });
     await seedUnit({ brand: "HONDA", model: "BEAT", color: "HITAM", buyPrice: 11_000_000, cost: 1_000_000 });
     await seedUnit({ brand: "YAMAHA", model: "NMAX", color: "HITAM", buyPrice: 20_000_000, cost: 1_000_000 });
@@ -114,15 +114,11 @@ describe("inventory dashboard page", () => {
 
     expect(html).toContain("Per Merek");
     expect(html).toContain("Per Model");
-    expect(html).toContain("Per Warna");
+    expect(html).not.toContain("Per Warna");
 
     // Brand Invested totals.
     expect(html).toContain("22.500.000");
     expect(html).toContain("45.000.000");
-    // Color Invested totals.
-    expect(html).toContain("33.000.000");
-    expect(html).toContain("10.500.000");
-    expect(html).toContain("24.000.000");
   });
 
   it("shows empty states when there is nothing in stock", async () => {

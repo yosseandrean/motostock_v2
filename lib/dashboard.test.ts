@@ -111,7 +111,7 @@ describe("computeDashboard", () => {
     });
   });
 
-  it("breaks down In Stock Units by Brand, Model and Color with counts and Invested", () => {
+  it("breaks down In Stock Units by Brand and Model with counts and Invested", () => {
     const units: DashboardUnit[] = [
       unit({ id: 1, brand: "HONDA", model: "BEAT", color: "MERAH", buyPrice: 10_000_000, cost: 500_000 }),
       unit({ id: 2, brand: "HONDA", model: "BEAT", color: "HITAM", buyPrice: 11_000_000, cost: 1_000_000 }),
@@ -128,11 +128,6 @@ describe("computeDashboard", () => {
     expect(dashboard.byModel).toEqual([
       { key: "BEAT", count: 2, invested: 22_500_000 },
       { key: "NMAX", count: 2, invested: 45_000_000 },
-    ]);
-    expect(dashboard.byColor).toEqual([
-      { key: "HITAM", count: 2, invested: 33_000_000 },
-      { key: "BIRU", count: 1, invested: 24_000_000 },
-      { key: "MERAH", count: 1, invested: 10_500_000 },
     ]);
   });
 
@@ -153,6 +148,5 @@ describe("computeDashboard", () => {
     expect(dashboard.staleUnits).toEqual([]);
     expect(dashboard.byBrand).toEqual([]);
     expect(dashboard.byModel).toEqual([]);
-    expect(dashboard.byColor).toEqual([]);
   });
 });
