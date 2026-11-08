@@ -1,0 +1,60 @@
+# Single-host deployment for Motostock.
+#
+#   app   — the Next.js app, built from ./Dockerfile. The SQLite database is
+#           persisted on the `motostock-data` volume at /data.
+#   caddy — the TLS-terminating reverse proxy. It obtains and renews the
+#           HTTPS certificate automatically and proxies to `app:3000`.
+#
+# Required variables (put them in a `.env` file next to this file):
+#   SESSION_SECRET    — long random string used to sign session cookies.
+#   SHARED_PASSWORD   — the single shared password used to log in.
+#   MOTOSTOCK_DOMAIN  — public hostname of the VPS, e.g. stok.example.com.
+#
+# See docs/deploy.md for the full setup.
+
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    init: true
+    environment:
+      # Absolute path so Prisma writes the database onto the mounted volume,
+      # not inside the read-only app filesystem.
+      DATABASE_URL: file:/data/motostock.db
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in .env}
+      SHARED_PASSWORD: ${SHARED_PASSWORD:?Set SHARED_PASSWORD in .env}
+    volumes:
+      - motostock-data:/data
+    expose:
+      - "3000"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/login').then(r => process.exit(r.status === 200 ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      MOTOSTOCK_DOMAIN: ${MOTOSTOCK_DOMAIN:?Set MOTOSTOCK_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  motostock-data:
+  caddy-data:
+  caddy-config:

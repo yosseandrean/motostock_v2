@@ -1,0 +1,13 @@
+# TLS-terminating reverse proxy for the Motostock app.
+#
+# Caddy serves the app over HTTPS with a certificate it obtains and renews
+# automatically from Let's Encrypt, then forwards requests to the app
+# container. Set MOTOSTOCK_DOMAIN (in .env) to the VPS's public hostname.
+#
+# The site address is evaluated from the container environment: the
+# docker-compose.yml `caddy` service passes MOTOSTOCK_DOMAIN through.
+
+{$MOTOSTOCK_DOMAIN} {
+	encode gzip
+	reverse_proxy app:3000
+}

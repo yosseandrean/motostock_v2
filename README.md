@@ -55,6 +55,17 @@ npm run build
 npm start
 ```
 
+## Deployment (Docker + HTTPS)
+
+The app is packaged as a single Docker container with a Caddy reverse proxy
+for automatic HTTPS, and the SQLite database persisted on a volume. See
+[`docs/deploy.md`](docs/deploy.md) for the full single-VPS setup.
+
+```bash
+cp .env.example .env   # set SESSION_SECRET, SHARED_PASSWORD, MOTOSTOCK_DOMAIN
+docker compose up -d --build
+```
+
 ## Auth model
 
 - Single shared password (no per-user accounts).

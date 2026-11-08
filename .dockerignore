@@ -1,0 +1,27 @@
+# Dependencies and build output are rebuilt inside the image.
+node_modules
+.next
+*.tsbuildinfo
+
+# Never bake secrets or the local dev database into the image.
+.env
+.env.*
+!.env.example
+
+# Local SQLite database files stay on the host / volume.
+prisma/*.db
+prisma/*.db-journal
+
+# VCS and CI noise.
+.git
+.gitignore
+.github
+
+# Docs and deployment files are not needed to build the app.
+docs
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Test output.
+coverage
