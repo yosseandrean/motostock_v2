@@ -1,37 +1,14 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { parseUnitForm } from "@/lib/unit-create";
-import type { UnitFormValues } from "@/lib/unit-create";
-
-function readFormValues(formData: FormData): UnitFormValues {
-  const read = (name: string): string => String(formData.get(name) ?? "");
-  return {
-    brand: read("brand"),
-    model: read("model"),
-    modelYear: read("modelYear"),
-    licensePlate: read("licensePlate"),
-    color: read("color"),
-    buyPrice: read("buyPrice"),
-    cost: read("cost"),
-    sellPrice: read("sellPrice"),
-    dateBought: read("dateBought"),
-    dateSold: read("dateSold"),
-    salesPerson: read("salesPerson"),
-    nameOnRegistration: read("nameOnRegistration"),
-    chassisSerialNumber: read("chassisSerialNumber"),
-    engineSerialNumber: read("engineSerialNumber"),
-    boughtFrom: read("boughtFrom"),
-    notes: read("notes"),
-  };
-}
+import { parseUnitForm, readUnitForm } from "@/lib/unit-create";
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated(request))) {
     return NextResponse.redirect(new URL("/login", request.url), 303);
   }
 
-  const values = readFormValues(await request.formData());
+  const values = readUnitForm(await request.formData());
   const parsed = parseUnitForm(values);
 
   if (!parsed.ok) {

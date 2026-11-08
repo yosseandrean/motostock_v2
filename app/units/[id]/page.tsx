@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatIDR } from "@/lib/format";
+import { DeleteUnitForm } from "./DeleteUnitForm";
 
 export const metadata: Metadata = {
   title: "Detail Unit — Motostock",
@@ -103,6 +104,13 @@ export default async function UnitDetailPage({
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="detail-actions">
+        <a className="edit-button" href={`/units/${unit.id}/edit`}>
+          Ubah
+        </a>
+        <DeleteUnitForm unitId={unit.id} />
       </div>
     </main>
   );

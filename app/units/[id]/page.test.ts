@@ -147,4 +147,28 @@ describe("unit detail page", () => {
     expect(html).toContain("Nomor Rangka sudah terpakai pada unit lain.");
     expect(html).toContain("Plat sudah terpakai pada unit lain.");
   });
+
+  it("links to the edit page and offers a delete form", async () => {
+    const unit = await prisma.unit.create({
+      data: {
+        brand: "HONDA",
+        model: "BEAT",
+        modelYear: "2023",
+        licensePlate: "B 1 AAA",
+        color: "MERAH",
+        buyPrice: 10_000_000,
+        cost: 0,
+        sellPrice: null,
+        dateBought: new Date("2026-01-01T12:00:00.000Z"),
+        dateSold: null,
+      },
+    });
+
+    const html = await renderPage(unit.id);
+
+    expect(html).toContain(`href="/units/${unit.id}/edit"`);
+    expect(html).toContain(`action="/api/units/${unit.id}/delete"`);
+    expect(html).toContain('method="post"');
+    expect(html).toContain("Hapus");
+  });
 });

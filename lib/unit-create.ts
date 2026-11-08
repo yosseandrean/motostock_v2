@@ -46,6 +46,29 @@ export type UnitFormResult =
   | { ok: true; data: UnitCreateData }
   | { ok: false; errors: UnitFormErrors };
 
+/** Read the 16 raw string fields out of a submitted FormData. */
+export function readUnitForm(formData: FormData): UnitFormValues {
+  const read = (name: string): string => String(formData.get(name) ?? "");
+  return {
+    brand: read("brand"),
+    model: read("model"),
+    modelYear: read("modelYear"),
+    licensePlate: read("licensePlate"),
+    color: read("color"),
+    buyPrice: read("buyPrice"),
+    cost: read("cost"),
+    sellPrice: read("sellPrice"),
+    dateBought: read("dateBought"),
+    dateSold: read("dateSold"),
+    salesPerson: read("salesPerson"),
+    nameOnRegistration: read("nameOnRegistration"),
+    chassisSerialNumber: read("chassisSerialNumber"),
+    engineSerialNumber: read("engineSerialNumber"),
+    boughtFrom: read("boughtFrom"),
+    notes: read("notes"),
+  };
+}
+
 const INTEGER_RE = /^\d+$/;
 const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
 const MODEL_YEAR_RE = /^\d{4}$/;
