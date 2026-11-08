@@ -159,6 +159,36 @@ body {
   border-bottom: none;
 }
 
+/* List search/filter */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-search {
+  flex: 1;
+  min-width: 14rem;
+}
+
+.filter-status {
+  min-width: 9rem;
+}
+
+.unit-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.detail-table th[scope="row"] {
+  color: var(--muted);
+  font-weight: 600;
+  width: 1%;
+}
+
 /* Nav links and import page */
 
 .nav-links {
