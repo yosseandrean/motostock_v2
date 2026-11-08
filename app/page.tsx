@@ -59,6 +59,9 @@ export default async function InventoryPage({
       <header className="inventory-header">
         <h1 className="inventory-title">Inventori</h1>
         <nav className="nav-links">
+          <a className="nav-link" href="/units/new">
+            Tambah Unit
+          </a>
           <a className="nav-link" href="/import">
             Impor CSV
           </a>

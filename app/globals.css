@@ -245,3 +245,60 @@ body {
   flex-direction: column;
   gap: 0.25rem;
 }
+
+/* Unit create form */
+
+.unit-form {
+  max-width: 40rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+  align-items: start;
+}
+
+.form-grid .field-label {
+  margin-top: 0.25rem;
+}
+
+.form-grid .field-input {
+  width: 100%;
+}
+
+.field-textarea {
+  min-height: 5rem;
+  font-family: inherit;
+}
+
+.field-error {
+  color: var(--danger);
+  font-size: 0.75rem;
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.unit-warning {
+  background: #fff7e6;
+  border: 1px solid #f0c36d;
+  color: #7a4a00;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}

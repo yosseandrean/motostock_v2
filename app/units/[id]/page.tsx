@@ -13,12 +13,25 @@ type Params = {
   id: string;
 };
 
+type SearchParams = {
+  warning?: string;
+};
+
+const WARNING_MESSAGES: Record<string, string> = {
+  chassis: "Nomor Rangka sudah terpakai pada unit lain.",
+  license: "Plat sudah terpakai pada unit lain.",
+};
+
 export default async function UnitDetailPage({
   params,
+  searchParams = Promise.resolve({}),
 }: {
   params: Promise<Params>;
+  searchParams?: Promise<SearchParams>;
 }) {
   const { id } = await params;
+  const { warning } = await searchParams;
+  const warnings = (warning ?? "").split(",").filter((code) => code !== "");
   const numericId = Number(id);
 
   if (!Number.isInteger(numericId) || numericId <= 0) {
@@ -70,6 +83,14 @@ export default async function UnitDetailPage({
           </form>
         </nav>
       </header>
+
+      {warnings.length > 0 ? (
+        <div className="unit-warning" role="alert">
+          {warnings.map((code) => (
+            <p key={code}>{WARNING_MESSAGES[code] ?? code}</p>
+          ))}
+        </div>
+      ) : null}
 
       <div className="table-wrap">
         <table className="unit-table detail-table">

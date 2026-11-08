@@ -6,10 +6,20 @@ import { createTestDb } from "@/test/helpers";
 
 let prisma: PrismaClient;
 type Params = { id: string };
-let UnitDetailPage: (props: { params: Promise<Params> }) => Promise<ReactElement>;
+type SearchParams = { warning?: string };
+let UnitDetailPage: (props: {
+  params: Promise<Params>;
+  searchParams?: Promise<SearchParams>;
+}) => Promise<ReactElement>;
 
-async function renderPage(id: string | number): Promise<string> {
-  const element = await UnitDetailPage({ params: Promise.resolve({ id: String(id) }) });
+async function renderPage(
+  id: string | number,
+  searchParams: SearchParams = {},
+): Promise<string> {
+  const element = await UnitDetailPage({
+    params: Promise.resolve({ id: String(id) }),
+    searchParams: Promise.resolve(searchParams),
+  });
   return renderToString(element);
 }
 
@@ -114,5 +124,27 @@ describe("unit detail page", () => {
     expect(html).toContain('<th scope="row">Catatan</th><td></td>');
     expect(html).toContain('<th scope="row">Harga Jual</th><td></td>');
     expect(html).toContain('<th scope="row">Tanggal Jual</th><td></td>');
+  });
+
+  it("shows duplicate warnings passed in the URL", async () => {
+    const unit = await prisma.unit.create({
+      data: {
+        brand: "HONDA",
+        model: "BEAT",
+        modelYear: "2023",
+        licensePlate: "B 1 AAA",
+        color: "MERAH",
+        buyPrice: 10_000_000,
+        cost: 0,
+        sellPrice: null,
+        dateBought: new Date("2026-01-01T12:00:00.000Z"),
+        dateSold: null,
+      },
+    });
+
+    const html = await renderPage(unit.id, { warning: "chassis,license" });
+
+    expect(html).toContain("Nomor Rangka sudah terpakai pada unit lain.");
+    expect(html).toContain("Plat sudah terpakai pada unit lain.");
   });
 });
