@@ -80,6 +80,9 @@ export default async function InventoryDashboardPage() {
           <a className="nav-link" href="/">
             Inventori
           </a>
+          <a className="nav-link" href="/sales">
+            Penjualan
+          </a>
           <a className="nav-link" href="/units/new">
             Tambah Unit
           </a>
