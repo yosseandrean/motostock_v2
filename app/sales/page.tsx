@@ -114,6 +114,9 @@ export default async function SalesDashboardPage({
           <a className="nav-link" href="/dashboard">
             Dashboard
           </a>
+          <a className="nav-link" href="/checklist">
+            Ceklis Data
+          </a>
           <a className="nav-link" href="/units/new">
             Tambah Unit
           </a>

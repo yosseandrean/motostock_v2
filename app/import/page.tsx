@@ -43,6 +43,9 @@ export default async function ImportPage({
           <a className="nav-link" href="/">
             Inventori
           </a>
+          <a className="nav-link" href="/checklist">
+            Ceklis Data
+          </a>
           <a className="nav-link" href="/api/export">
             Ekspor CSV
           </a>

@@ -44,6 +44,9 @@ export default async function NewUnitPage({
           <a className="nav-link" href="/">
             Inventori
           </a>
+          <a className="nav-link" href="/checklist">
+            Ceklis Data
+          </a>
           <form action="/api/logout" method="post">
             <button type="submit" className="logout-button">
               Keluar

@@ -65,6 +65,9 @@ export default async function InventoryPage({
           <a className="nav-link" href="/sales">
             Penjualan
           </a>
+          <a className="nav-link" href="/checklist">
+            Ceklis Data
+          </a>
           <a className="nav-link" href="/units/new">
             Tambah Unit
           </a>
