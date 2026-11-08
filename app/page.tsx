@@ -30,11 +30,19 @@ export default async function InventoryPage() {
     <main className="inventory-shell">
       <header className="inventory-header">
         <h1 className="inventory-title">Inventori</h1>
-        <form action="/api/logout" method="post">
-          <button type="submit" className="logout-button">
-            Keluar
-          </button>
-        </form>
+        <nav className="nav-links">
+          <a className="nav-link" href="/import">
+            Impor CSV
+          </a>
+          <a className="nav-link" href="/api/export">
+            Ekspor CSV
+          </a>
+          <form action="/api/logout" method="post">
+            <button type="submit" className="logout-button">
+              Keluar
+            </button>
+          </form>
+        </nav>
       </header>
 
       {units.length === 0 ? (
