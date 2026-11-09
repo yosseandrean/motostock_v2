@@ -231,7 +231,11 @@ export default async function SalesDashboardPage({
                       </td>
                       <td>{loss.model}</td>
                       <td>{formatIDR(loss.sellPrice)}</td>
-                      <td>{formatIDR(loss.grossProfit)}</td>
+                      <td>
+                        <span className="loss-value">
+                          {formatIDR(loss.grossProfit)}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

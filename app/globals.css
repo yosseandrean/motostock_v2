@@ -219,12 +219,20 @@
     @apply text-3xl font-bold text-grafit-50;
   }
 
+  .loss-value {
+    @apply font-semibold text-red-400 tabular-nums;
+  }
+
   .dashboard-section {
     @apply flex flex-col gap-2;
   }
 
   .section-title {
     @apply text-xl font-semibold text-grafit-100;
+  }
+
+  .trend-chart {
+    @apply rounded-xl border border-grafit-800 bg-grafit-900 p-4;
   }
 
   .checklist-count {
