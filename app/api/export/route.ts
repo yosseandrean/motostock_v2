@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
-import { exportInventoryCsv } from "@/lib/export";
+import { exportCsvFilename, exportInventoryCsv } from "@/lib/export";
 import { externalOrigin } from "@/lib/request-url";
 
 export async function GET(request: Request) {
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     status: 200,
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": 'attachment; filename="inventory.csv"',
+      "Content-Disposition": `attachment; filename="${exportCsvFilename(new Date())}"`,
     },
   });
 }
