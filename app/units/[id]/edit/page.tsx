@@ -11,6 +11,7 @@ import {
   listSalesPersons,
 } from "@/lib/catalog";
 import { SiteNav } from "@/app/site-nav";
+import { DeleteUnitForm } from "../DeleteUnitForm";
 
 export const metadata: Metadata = {
   title: "Ubah Unit — Motostock",
@@ -25,6 +26,12 @@ type Params = {
 type SearchParams = {
   errors?: string;
   values?: string;
+  warning?: string;
+};
+
+const WARNING_MESSAGES: Record<string, string> = {
+  chassis: "Nomor Rangka sudah terpakai pada unit lain.",
+  license: "Plat sudah terpakai pada unit lain.",
 };
 
 export default async function EditUnitPage({
@@ -38,6 +45,9 @@ export default async function EditUnitPage({
   const query = await searchParams;
   const errors = parseRecord(query.errors);
   const submitted = parseRecord(query.values);
+  const warnings = (query.warning ?? "")
+    .split(",")
+    .filter((code) => code !== "");
 
   const numericId = Number(id);
   if (!Number.isInteger(numericId) || numericId <= 0) {
@@ -92,6 +102,14 @@ export default async function EditUnitPage({
       <main className="inventory-shell">
         <h1 className="inventory-title">Ubah Unit</h1>
 
+        {warnings.length > 0 ? (
+          <div className="unit-warning" role="alert">
+            {warnings.map((code) => (
+              <p key={code}>{WARNING_MESSAGES[code] ?? code}</p>
+            ))}
+          </div>
+        ) : null}
+
         <UnitForm
           action={`/api/units/${unit.id}`}
           values={values}
@@ -102,8 +120,12 @@ export default async function EditUnitPage({
           salesPersons={salesPersons}
           boughtFroms={boughtFroms}
           submitLabel="Simpan Perubahan"
-          cancelHref={`/units/${unit.id}`}
+          cancelHref="/"
         />
+
+        <div className="detail-actions">
+          <DeleteUnitForm unitId={unit.id} />
+        </div>
       </main>
     </>
   );

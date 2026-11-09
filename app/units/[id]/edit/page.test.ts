@@ -6,7 +6,7 @@ import { createTestDb } from "@/test/helpers";
 
 let prisma: PrismaClient;
 type Params = { id: string };
-type SearchParams = { errors?: string; values?: string };
+type SearchParams = { errors?: string; values?: string; warning?: string };
 let EditUnitPage: (props: {
   params: Promise<Params>;
   searchParams: Promise<SearchParams>;
@@ -113,5 +113,29 @@ describe("edit unit page", () => {
     });
 
     expect(html).toContain("Merek wajib diisi");
+  });
+
+  it("offers a delete form for the Unit", async () => {
+    const unit = await seedUnit();
+    const html = await renderPage(unit.id);
+
+    expect(html).toContain(`action="/api/units/${unit.id}/delete"`);
+    expect(html).toContain('method="post"');
+    expect(html).toContain("Hapus");
+  });
+
+  it("shows duplicate warnings passed in the URL", async () => {
+    const unit = await seedUnit();
+    const html = await renderPage(unit.id, { warning: "chassis,license" });
+
+    expect(html).toContain("Nomor Rangka sudah terpakai pada unit lain.");
+    expect(html).toContain("Plat sudah terpakai pada unit lain.");
+  });
+
+  it("cancels back to the Inventori list", async () => {
+    const unit = await seedUnit();
+    const html = await renderPage(unit.id);
+
+    expect(html).toContain('class="nav-link" href="/">Batal');
   });
 });
