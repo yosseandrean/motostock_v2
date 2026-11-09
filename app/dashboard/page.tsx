@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { formatIDR } from "@/lib/format";
 import { computeDashboard } from "@/lib/dashboard";
 import type { AgingBucketKey, BreakdownRow } from "@/lib/dashboard";
+import { SiteNav } from "@/app/site-nav";
 
 export const metadata: Metadata = {
   title: "Dashboard Inventori — Motostock",
@@ -73,122 +74,98 @@ export default async function InventoryDashboardPage() {
   const dashboard = computeDashboard(units, new Date());
 
   return (
-    <main className="inventory-shell">
-      <header className="inventory-header">
+    <>
+      <SiteNav active="dashboard" />
+      <main className="inventory-shell">
         <h1 className="inventory-title">Dashboard Inventori</h1>
-        <nav className="nav-links">
-          <a className="nav-link" href="/">
-            Inventori
-          </a>
-          <a className="nav-link" href="/sales">
-            Penjualan
-          </a>
-          <a className="nav-link" href="/checklist">
-            Ceklis Data
-          </a>
-          <a className="nav-link" href="/units/new">
-            Tambah Unit
-          </a>
-          <a className="nav-link" href="/import">
-            Impor CSV
-          </a>
-          <a className="nav-link" href="/api/export">
-            Ekspor CSV
-          </a>
-          <form action="/api/logout" method="post">
-            <button type="submit" className="logout-button">
-              Keluar
-            </button>
-          </form>
-        </nav>
-      </header>
 
-      <section className="summary-grid">
-        <div className="summary-card">
-          <span className="summary-label">Unit Stok</span>
-          <span className="summary-value">{dashboard.inStockCount}</span>
-        </div>
-        <div className="summary-card">
-          <span className="summary-label">Total Invested</span>
-          <span className="summary-value">
-            {formatIDR(dashboard.totalInvested)}
-          </span>
-        </div>
-      </section>
+        <section className="summary-grid">
+          <div className="summary-card">
+            <span className="summary-label">Unit Stok</span>
+            <span className="summary-value">{dashboard.inStockCount}</span>
+          </div>
+          <div className="summary-card">
+            <span className="summary-label">Total Invested</span>
+            <span className="summary-value">
+              {formatIDR(dashboard.totalInvested)}
+            </span>
+          </div>
+        </section>
 
-      <section className="dashboard-section">
-        <h2 className="section-title">Umur Stok</h2>
-        <div className="table-wrap">
-          <table className="unit-table">
-            <thead>
-              <tr>
-                <th scope="col">Kelompok</th>
-                <th scope="col">Unit</th>
-                <th scope="col">Invested</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dashboard.agingBuckets.map((bucket) => (
-                <tr key={bucket.key}>
-                  <td>{AGING_BUCKET_LABELS[bucket.key]}</td>
-                  <td>{bucket.count}</td>
-                  <td>{formatIDR(bucket.invested)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="dashboard-section">
-        <h2 className="section-title">Unit Stale</h2>
-        {dashboard.staleUnits.length === 0 ? (
-          <p className="empty-state" role="status">
-            Tidak ada unit stale.
-          </p>
-        ) : (
+        <section className="dashboard-section">
+          <h2 className="section-title">Umur Stok</h2>
           <div className="table-wrap">
             <table className="unit-table">
               <thead>
                 <tr>
-                  <th scope="col">Merek</th>
-                  <th scope="col">Model</th>
-                  <th scope="col">Warna</th>
-                  <th scope="col">Plat</th>
-                  <th scope="col">Umur (hari)</th>
+                  <th scope="col">Kelompok</th>
+                  <th scope="col">Unit</th>
                   <th scope="col">Invested</th>
                 </tr>
               </thead>
               <tbody>
-                {dashboard.staleUnits.map((stale) => (
-                  <tr key={stale.id}>
-                    <td>
-                      <a className="unit-link" href={`/units/${stale.id}`}>
-                        {stale.brand}
-                      </a>
-                    </td>
-                    <td>{stale.model}</td>
-                    <td>{stale.color}</td>
-                    <td>{stale.licensePlate}</td>
-                    <td>{stale.age}</td>
-                    <td>{formatIDR(stale.invested)}</td>
+                {dashboard.agingBuckets.map((bucket) => (
+                  <tr key={bucket.key}>
+                    <td>{AGING_BUCKET_LABELS[bucket.key]}</td>
+                    <td>{bucket.count}</td>
+                    <td>{formatIDR(bucket.invested)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        )}
-      </section>
+        </section>
 
-      <section className="dashboard-section">
-        <h2 className="section-title">Per Merek</h2>
-        <BreakdownTable label="Merek" rows={dashboard.byBrand} />
-      </section>
+        <section className="dashboard-section">
+          <h2 className="section-title">Unit Stale</h2>
+          {dashboard.staleUnits.length === 0 ? (
+            <p className="empty-state" role="status">
+              Tidak ada unit stale.
+            </p>
+          ) : (
+            <div className="table-wrap">
+              <table className="unit-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Merek</th>
+                    <th scope="col">Model</th>
+                    <th scope="col">Warna</th>
+                    <th scope="col">Plat</th>
+                    <th scope="col">Umur (hari)</th>
+                    <th scope="col">Invested</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dashboard.staleUnits.map((stale) => (
+                    <tr key={stale.id}>
+                      <td>
+                        <a className="unit-link" href={`/units/${stale.id}`}>
+                          {stale.brand}
+                        </a>
+                      </td>
+                      <td>{stale.model}</td>
+                      <td>{stale.color}</td>
+                      <td>{stale.licensePlate}</td>
+                      <td>{stale.age}</td>
+                      <td>{formatIDR(stale.invested)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
 
-      <section className="dashboard-section">
-        <h2 className="section-title">Per Model</h2>
-        <BreakdownTable label="Model" rows={dashboard.byModel} />
-      </section>
-    </main>
+        <section className="dashboard-section">
+          <h2 className="section-title">Per Merek</h2>
+          <BreakdownTable label="Merek" rows={dashboard.byBrand} />
+        </section>
+
+        <section className="dashboard-section">
+          <h2 className="section-title">Per Model</h2>
+          <BreakdownTable label="Model" rows={dashboard.byModel} />
+        </section>
+      </main>
+    </>
   );
 }

@@ -1,388 +1,276 @@
-:root {
-  --background: #f5f6f8;
-  --foreground: #171717;
-  --surface: #ffffff;
-  --border: #e2e4e8;
-  --muted: #6b7280;
-  --accent: #1f6feb;
-  --accent-foreground: #ffffff;
-  --danger: #b91c1c;
+@import "tailwindcss";
+
+/*
+ * Design tokens — dark "Grafit + Amber" palette (see docs/adr/0004).
+ * Tailwind v4's CSS-first `@theme` keeps every color and the font family in
+ * one place; the utilities below (`bg-grafit-950`, `text-amber-400`, …) are
+ * generated from these variables. Amber is Tailwind's built-in scale.
+ */
+@theme {
+  --color-grafit-50: #f6f7f9;
+  --color-grafit-100: #e9ebef;
+  --color-grafit-200: #d3d7dd;
+  --color-grafit-300: #aeb5bf;
+  --color-grafit-400: #7f8894;
+  --color-grafit-500: #5f6874;
+  --color-grafit-600: #48505b;
+  --color-grafit-700: #373e47;
+  --color-grafit-800: #272d34;
+  --color-grafit-900: #1b2026;
+  --color-grafit-950: #111419;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-grafit-950 text-grafit-100 font-sans antialiased;
+    font-variant-numeric: tabular-nums;
+  }
 }
 
-html {
-  height: 100%;
-}
+@layer components {
+  /* ---- Shared navigation shell ---- */
 
-body {
-  min-height: 100%;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
+  .site-nav {
+    @apply sticky top-0 z-10 border-b border-grafit-800 bg-grafit-950/90 backdrop-blur;
+  }
 
-/* Login */
+  .site-nav-inner {
+    @apply mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3;
+  }
 
-.login-shell {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
+  .site-nav-link {
+    @apply text-sm font-medium text-grafit-300 no-underline transition-colors hover:text-grafit-50;
+  }
 
-.login-card {
-  width: 100%;
-  max-width: 22rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
+  .site-nav-link[aria-current="page"] {
+    @apply text-amber-400;
+    box-shadow: inset 0 -2px 0 var(--color-amber-400);
+  }
 
-.login-title {
-  font-size: 1.5rem;
-  text-align: center;
-}
+  .site-nav-logout {
+    @apply cursor-pointer rounded-lg border border-grafit-700 bg-grafit-900 px-3 py-1.5 text-sm font-medium text-grafit-200 transition-colors hover:border-grafit-600 hover:text-grafit-50;
+  }
 
-.login-subtitle {
-  color: var(--muted);
-  text-align: center;
-  margin-bottom: 0.5rem;
-}
+  /* ---- Login ---- */
 
-.field-label {
-  font-size: 0.875rem;
-  font-weight: 600;
-}
+  .login-shell {
+    @apply flex min-h-screen items-center justify-center p-4;
+  }
 
-.field-input {
-  padding: 0.625rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-}
+  .login-card {
+    @apply flex w-full max-w-sm flex-col gap-4 rounded-2xl border border-grafit-800 bg-grafit-900 p-8 shadow-xl;
+  }
 
-.login-error {
-  color: var(--danger);
-  font-size: 0.875rem;
-}
+  .login-title {
+    @apply text-center text-2xl font-bold text-grafit-50;
+  }
 
-.login-button {
-  padding: 0.625rem 0.75rem;
-  background: var(--accent);
-  color: var(--accent-foreground);
-  border: none;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-}
+  .login-subtitle {
+    @apply mb-2 text-center text-sm text-grafit-400;
+  }
 
-/* Inventory */
+  .login-error {
+    @apply text-sm text-red-400;
+  }
 
-.inventory-shell {
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
+  /* ---- Shared form controls ---- */
 
-.inventory-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
+  .field-label {
+    @apply text-sm font-semibold text-grafit-200;
+  }
 
-.inventory-title {
-  font-size: 1.75rem;
-}
+  .field-input {
+    @apply rounded-lg border border-grafit-700 bg-grafit-950 px-3 py-2.5 text-base text-grafit-100;
+  }
 
-.logout-button {
-  padding: 0.5rem 0.875rem;
-  background: var(--surface);
-  color: var(--foreground);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-}
+  .field-input::placeholder {
+    color: var(--color-grafit-500);
+  }
 
-.empty-state {
-  padding: 3rem 1rem;
-  text-align: center;
-  color: var(--muted);
-  background: var(--surface);
-  border: 1px dashed var(--border);
-  border-radius: 0.75rem;
-}
+  .field-input:focus {
+    outline: 2px solid var(--color-amber-500);
+    outline-offset: -1px;
+  }
 
-.table-wrap {
-  overflow-x: auto;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-}
+  .login-button {
+    @apply cursor-pointer rounded-lg bg-amber-500 px-3 py-2.5 text-base font-semibold text-grafit-950 transition-colors hover:bg-amber-400;
+  }
 
-.unit-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-}
+  .edit-button {
+    @apply inline-flex items-center rounded-lg bg-amber-500 px-3.5 py-2 text-sm font-semibold text-grafit-950 no-underline transition-colors hover:bg-amber-400;
+  }
 
-.unit-table th,
-.unit-table td {
-  padding: 0.625rem 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
+  .danger-button {
+    @apply inline-flex cursor-pointer items-center rounded-lg border border-red-500 bg-grafit-900 px-3.5 py-2 text-sm font-semibold text-red-400 transition-colors hover:bg-red-500/10;
+  }
 
-.unit-table thead th {
-  font-weight: 600;
-  color: var(--muted);
-}
+  .nav-link {
+    @apply text-sm font-semibold text-amber-400 no-underline;
+  }
 
-.unit-table tbody tr:last-child td {
-  border-bottom: none;
-}
+  /* ---- Page shell ---- */
 
-/* List search/filter */
+  .inventory-shell {
+    @apply mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8;
+  }
 
-.filter-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
+  .inventory-title {
+    @apply text-3xl font-bold text-grafit-50;
+  }
 
-.filter-search {
-  flex: 1;
-  min-width: 14rem;
-}
+  .empty-state {
+    @apply rounded-xl border border-dashed border-grafit-700 bg-grafit-900 px-4 py-12 text-center text-grafit-400;
+  }
 
-.filter-status {
-  min-width: 9rem;
-}
+  /* ---- Tables ---- */
 
-.unit-link {
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 600;
-}
+  .table-wrap {
+    @apply overflow-x-auto rounded-xl border border-grafit-800 bg-grafit-900;
+  }
 
-.detail-table th[scope="row"] {
-  color: var(--muted);
-  font-weight: 600;
-  width: 1%;
-}
+  .unit-table {
+    @apply w-full border-collapse text-sm;
+  }
 
-/* Dashboard */
+  .unit-table th,
+  .unit-table td {
+    @apply border-b border-grafit-800 px-3 py-2.5 text-left whitespace-nowrap;
+  }
 
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  gap: 1rem;
-}
+  .unit-table thead th {
+    @apply font-semibold text-grafit-400;
+  }
 
-.summary-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
+  .unit-table tbody tr:last-child td {
+    border-bottom: none;
+  }
 
-.summary-label {
-  color: var(--muted);
-  font-size: 0.875rem;
-}
+  .detail-table th[scope="row"] {
+    @apply w-px whitespace-nowrap font-semibold text-grafit-400;
+  }
 
-.summary-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-}
+  /* ---- Filter bar ---- */
 
-.dashboard-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
+  .filter-bar {
+    @apply flex flex-wrap items-center gap-2;
+  }
 
-.section-title {
-  font-size: 1.25rem;
-}
+  .filter-search {
+    @apply min-w-56 flex-1;
+  }
 
-.checklist-count {
-  display: inline-block;
-  min-width: 1.75rem;
-  padding: 0.125rem 0.5rem;
-  background: var(--border);
-  color: var(--foreground);
-  border-radius: 999px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  text-align: center;
-  vertical-align: middle;
-}
+  .filter-status {
+    @apply min-w-36;
+  }
 
-/* Nav links and import page */
+  .unit-link {
+    @apply font-semibold text-amber-400 no-underline;
+  }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+  /* ---- Dashboard / summary ---- */
 
-.nav-link {
-  color: var(--accent);
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 600;
-}
+  .summary-grid {
+    @apply grid gap-4;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
 
-.import-card {
-  max-width: 32rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
+  .summary-card {
+    @apply flex flex-col gap-1 rounded-xl border border-grafit-800 bg-grafit-900 p-5;
+  }
 
-.import-hint {
-  color: var(--muted);
-  font-size: 0.875rem;
-}
+  .summary-label {
+    @apply text-sm text-grafit-400;
+  }
 
-.import-error {
-  color: var(--danger);
-  font-size: 0.875rem;
-}
+  .summary-value {
+    @apply text-3xl font-bold text-grafit-50;
+  }
 
-.import-result {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+  .dashboard-section {
+    @apply flex flex-col gap-2;
+  }
 
-.import-result-title {
-  font-size: 1.125rem;
-}
+  .section-title {
+    @apply text-xl font-semibold text-grafit-100;
+  }
 
-.import-summary {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
+  .checklist-count {
+    @apply inline-block min-w-7 rounded-full bg-grafit-700 px-2 py-0.5 text-center align-middle text-sm font-bold text-grafit-100;
+  }
 
-/* Unit create form */
+  /* ---- Import page ---- */
 
-.unit-form {
-  max-width: 40rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
+  .import-card {
+    @apply flex max-w-2xl flex-col gap-3 rounded-xl border border-grafit-800 bg-grafit-900 p-6;
+  }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem 1rem;
-  align-items: start;
-}
+  .import-hint {
+    @apply text-sm text-grafit-400;
+  }
 
-.form-grid .field-label {
-  margin-top: 0.25rem;
-}
+  .import-error {
+    @apply text-sm text-red-400;
+  }
 
-.form-grid .field-input {
-  width: 100%;
-}
+  .import-result {
+    @apply flex flex-col gap-4 rounded-xl border border-grafit-800 bg-grafit-900 p-6;
+  }
 
-.field-textarea {
-  min-height: 5rem;
-  font-family: inherit;
-}
+  .import-result-title {
+    @apply text-lg font-semibold text-grafit-100;
+  }
 
-.field-error {
-  color: var(--danger);
-  font-size: 0.75rem;
-  grid-column: 1 / -1;
-}
+  .import-summary {
+    @apply flex list-none flex-col gap-1;
+  }
 
-.form-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+  /* ---- Unit form ---- */
 
-.unit-warning {
-  background: #fff7e6;
-  border: 1px solid #f0c36d;
-  color: #7a4a00;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-}
+  .unit-form {
+    @apply flex max-w-3xl flex-col gap-4 rounded-xl border border-grafit-800 bg-grafit-900 p-6;
+  }
 
-/* Unit detail actions */
+  .form-grid {
+    @apply grid items-start gap-x-4 gap-y-3;
+    grid-template-columns: 1fr 1fr;
+  }
 
-.detail-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+  .form-grid .field-label {
+    @apply mt-1;
+  }
 
-.edit-button {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 0.875rem;
-  background: var(--accent);
-  color: var(--accent-foreground);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-decoration: none;
-}
+  .form-grid .field-input {
+    @apply w-full;
+  }
 
-.danger-button {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 0.875rem;
-  background: var(--surface);
-  color: var(--danger);
-  border: 1px solid var(--danger);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
+  .field-textarea {
+    min-height: 5rem;
+    font-family: inherit;
+  }
+
+  .field-error {
+    @apply text-xs text-red-400;
+    grid-column: 1 / -1;
+  }
+
+  .form-actions {
+    @apply flex items-center gap-4;
+  }
+
+  .unit-warning {
+    @apply flex flex-col gap-1 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-300;
+  }
+
+  /* ---- Unit detail actions ---- */
+
+  .detail-actions {
+    @apply flex items-center gap-4;
+  }
 }

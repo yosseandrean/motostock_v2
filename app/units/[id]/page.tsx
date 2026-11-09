@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatIDR } from "@/lib/format";
 import { DeleteUnitForm } from "./DeleteUnitForm";
+import { SiteNav } from "@/app/site-nav";
 
 export const metadata: Metadata = {
   title: "Detail Unit — Motostock",
@@ -60,7 +61,10 @@ export default async function UnitDetailPage({
       value: unit.sellPrice === null ? "" : formatIDR(unit.sellPrice),
     },
     { label: "Tanggal Beli", value: formatDate(unit.dateBought) },
-    { label: "Tanggal Jual", value: unit.dateSold === null ? "" : formatDate(unit.dateSold) },
+    {
+      label: "Tanggal Jual",
+      value: unit.dateSold === null ? "" : formatDate(unit.dateSold),
+    },
     { label: "Sales Person", value: unit.salesPerson ?? "" },
     { label: "Nama di STNK", value: unit.nameOnRegistration ?? "" },
     { label: "Nomor Rangka", value: unit.chassisSerialNumber ?? "" },
@@ -70,48 +74,39 @@ export default async function UnitDetailPage({
   ];
 
   return (
-    <main className="inventory-shell">
-      <header className="inventory-header">
+    <>
+      <SiteNav />
+      <main className="inventory-shell">
         <h1 className="inventory-title">Detail Unit</h1>
-        <nav className="nav-links">
-          <a className="nav-link" href="/">
-            Inventori
-          </a>
-          <form action="/api/logout" method="post">
-            <button type="submit" className="logout-button">
-              Keluar
-            </button>
-          </form>
-        </nav>
-      </header>
 
-      {warnings.length > 0 ? (
-        <div className="unit-warning" role="alert">
-          {warnings.map((code) => (
-            <p key={code}>{WARNING_MESSAGES[code] ?? code}</p>
-          ))}
-        </div>
-      ) : null}
-
-      <div className="table-wrap">
-        <table className="unit-table detail-table">
-          <tbody>
-            {fields.map((field) => (
-              <tr key={field.label}>
-                <th scope="row">{field.label}</th>
-                <td>{field.value}</td>
-              </tr>
+        {warnings.length > 0 ? (
+          <div className="unit-warning" role="alert">
+            {warnings.map((code) => (
+              <p key={code}>{WARNING_MESSAGES[code] ?? code}</p>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </div>
+        ) : null}
 
-      <div className="detail-actions">
-        <a className="edit-button" href={`/units/${unit.id}/edit`}>
-          Ubah
-        </a>
-        <DeleteUnitForm unitId={unit.id} />
-      </div>
-    </main>
+        <div className="table-wrap">
+          <table className="unit-table detail-table">
+            <tbody>
+              {fields.map((field) => (
+                <tr key={field.label}>
+                  <th scope="row">{field.label}</th>
+                  <td>{field.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="detail-actions">
+          <a className="edit-button" href={`/units/${unit.id}/edit`}>
+            Ubah
+          </a>
+          <DeleteUnitForm unitId={unit.id} />
+        </div>
+      </main>
+    </>
   );
 }

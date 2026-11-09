@@ -10,6 +10,7 @@ import {
   listModels,
   listSalesPersons,
 } from "@/lib/catalog";
+import { SiteNav } from "@/app/site-nav";
 
 export const metadata: Metadata = {
   title: "Ubah Unit — Motostock",
@@ -58,57 +59,52 @@ export default async function EditUnitPage({
     buyPrice: submitted.buyPrice ?? String(unit.buyPrice),
     cost: submitted.cost ?? String(unit.cost),
     sellPrice:
-      submitted.sellPrice ?? (unit.sellPrice === null ? "" : String(unit.sellPrice)),
+      submitted.sellPrice ??
+      (unit.sellPrice === null ? "" : String(unit.sellPrice)),
     dateBought: submitted.dateBought ?? formatDateOnly(unit.dateBought),
     dateSold:
-      submitted.dateSold ?? (unit.dateSold === null ? "" : formatDateOnly(unit.dateSold)),
-    salesPerson: submitted.salesPerson ?? (unit.salesPerson ?? ""),
-    nameOnRegistration: submitted.nameOnRegistration ?? (unit.nameOnRegistration ?? ""),
-    chassisSerialNumber: submitted.chassisSerialNumber ?? (unit.chassisSerialNumber ?? ""),
-    engineSerialNumber: submitted.engineSerialNumber ?? (unit.engineSerialNumber ?? ""),
-    boughtFrom: submitted.boughtFrom ?? (unit.boughtFrom ?? ""),
-    notes: submitted.notes ?? (unit.notes ?? ""),
+      submitted.dateSold ??
+      (unit.dateSold === null ? "" : formatDateOnly(unit.dateSold)),
+    salesPerson: submitted.salesPerson ?? unit.salesPerson ?? "",
+    nameOnRegistration:
+      submitted.nameOnRegistration ?? unit.nameOnRegistration ?? "",
+    chassisSerialNumber:
+      submitted.chassisSerialNumber ?? unit.chassisSerialNumber ?? "",
+    engineSerialNumber:
+      submitted.engineSerialNumber ?? unit.engineSerialNumber ?? "",
+    boughtFrom: submitted.boughtFrom ?? unit.boughtFrom ?? "",
+    notes: submitted.notes ?? unit.notes ?? "",
   };
 
-  const [brands, models, colors, salesPersons, boughtFroms] = await Promise.all([
-    listBrands(),
-    listModels(),
-    listColors(),
-    listSalesPersons(),
-    listBoughtFrom(),
-  ]);
+  const [brands, models, colors, salesPersons, boughtFroms] = await Promise.all(
+    [
+      listBrands(),
+      listModels(),
+      listColors(),
+      listSalesPersons(),
+      listBoughtFrom(),
+    ],
+  );
 
   return (
-    <main className="inventory-shell">
-      <header className="inventory-header">
+    <>
+      <SiteNav />
+      <main className="inventory-shell">
         <h1 className="inventory-title">Ubah Unit</h1>
-        <nav className="nav-links">
-          <a className="nav-link" href="/">
-            Inventori
-          </a>
-          <a className="nav-link" href={`/units/${unit.id}`}>
-            Detail
-          </a>
-          <form action="/api/logout" method="post">
-            <button type="submit" className="logout-button">
-              Keluar
-            </button>
-          </form>
-        </nav>
-      </header>
 
-      <UnitForm
-        action={`/api/units/${unit.id}`}
-        values={values}
-        errors={errors}
-        brands={brands}
-        models={models}
-        colors={colors}
-        salesPersons={salesPersons}
-        boughtFroms={boughtFroms}
-        submitLabel="Simpan Perubahan"
-        cancelHref={`/units/${unit.id}`}
-      />
-    </main>
+        <UnitForm
+          action={`/api/units/${unit.id}`}
+          values={values}
+          errors={errors}
+          brands={brands}
+          models={models}
+          colors={colors}
+          salesPersons={salesPersons}
+          boughtFroms={boughtFroms}
+          submitLabel="Simpan Perubahan"
+          cancelHref={`/units/${unit.id}`}
+        />
+      </main>
+    </>
   );
 }

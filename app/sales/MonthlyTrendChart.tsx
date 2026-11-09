@@ -26,11 +26,7 @@ const compactIdr = new Intl.NumberFormat("id-ID", {
  * (Pendapatan) and one for Gross Profit (Laba Kotor). Responsive so it fits a
  * phone viewport; the parent passes the already-computed trend points.
  */
-export function MonthlyTrendChart({
-  data,
-}: {
-  data: SalesTrendPoint[];
-}) {
+export function MonthlyTrendChart({ data }: { data: SalesTrendPoint[] }) {
   return (
     <div className="trend-chart">
       <ResponsiveContainer width="100%" height={280}>
@@ -51,7 +47,7 @@ export function MonthlyTrendChart({
             type="monotone"
             dataKey="revenue"
             name="Pendapatan"
-            stroke="#1f6feb"
+            stroke="#fbbf24"
             strokeWidth={2}
             dot={false}
           />
@@ -59,7 +55,7 @@ export function MonthlyTrendChart({
             type="monotone"
             dataKey="grossProfit"
             name="Laba Kotor"
-            stroke="#16a34a"
+            stroke="#22c55e"
             strokeWidth={2}
             dot={false}
           />
