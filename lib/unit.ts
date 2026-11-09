@@ -24,6 +24,16 @@ export type UnitFilter = {
   status?: UnitStatus;
 };
 
+/**
+ * A Unit serialized for the client inventory list. Date labels are preformatted
+ * server-side so the client renders plain strings instead of parsing Dates.
+ */
+export type InventoryUnit = UnitLike & {
+  id: number;
+  dateBoughtLabel: string;
+  dateSoldLabel: string | null;
+};
+
 /** A Unit is Sold once it has a Sell Price; otherwise it is In Stock. */
 export function isSold(unit: Pick<UnitLike, "sellPrice">): boolean {
   return unit.sellPrice !== null;
@@ -44,6 +54,13 @@ export function grossProfit(
 /** The derived Status as the Indonesian label shown in the UI. */
 export function statusLabel(unit: Pick<UnitLike, "sellPrice">): string {
   return isSold(unit) ? "Terjual" : "Stok";
+}
+
+/** Parse an incoming status filter value; undefined when invalid. */
+export function parseUnitStatus(
+  value: string | undefined,
+): UnitStatus | undefined {
+  return value === "stok" || value === "terjual" ? value : undefined;
 }
 
 /**
