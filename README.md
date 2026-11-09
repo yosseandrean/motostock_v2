@@ -20,16 +20,26 @@ cp .env.example .env
 
 Edit `.env` and set:
 
-- `DATABASE_URL` — SQLite file path (default `file:./dev.db`, resolved under `prisma/`).
+- `DATABASE_URL` — SQLite file path (default `file:./prisma/dev.db`, resolved
+  relative to the repo root where `prisma.config.ts` lives).
 - `SESSION_SECRET` — secret used to sign the 30-day session cookie. Use a long
   random string in production.
 - `SHARED_PASSWORD` — the single shared password used to log in.
 
-Create the database and Unit table:
+Generate the Prisma client and create the database + Unit table:
 
 ```bash
+npm run db:generate
 npm run db:migrate
 ```
+
+> Prisma 7 no longer generates the client during `migrate dev`, so run
+> `npm run db:generate` after installing and after any schema change.
+
+> **Upgrading from Prisma 6:** the SQLite URL is now resolved relative to the
+> repo root instead of `prisma/`. If an existing local `.env` still points at
+> `file:./dev.db`, change it to `file:./prisma/dev.db` so it keeps using the
+> same database file.
 
 ## Development
 

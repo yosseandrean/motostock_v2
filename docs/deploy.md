@@ -108,8 +108,9 @@ docker compose run --rm --entrypoint npx app prisma migrate status
 
 - **Image** (`Dockerfile`) — multi-stage build using Next.js
   `output: "standalone"`. The runner stage copies the traced server, static
-  assets, the Prisma CLI + schema + migrations, and the full dependency tree
-  (so `prisma migrate deploy` and the query engine are always present).
+  assets, the Prisma CLI + config + schema + migrations, and the full
+  dependency tree (so `prisma migrate deploy` and the better-sqlite3 driver
+  adapter are always present).
 - **Entrypoint** (`docker/entrypoint.sh`) — runs `prisma migrate deploy`, then
   `node server.js`.
 - **HTTPS** (`Caddyfile`) — Caddy proxies `app:3000` and obtains/renews the

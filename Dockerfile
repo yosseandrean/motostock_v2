@@ -12,9 +12,10 @@
 # survives container restarts and image rebuilds.
 
 # ---- base ---------------------------------------------------------------
-# Debian (glibc) matches the Prisma engine binary Next.js traces into the
-# standalone output (`libquery_engine-debian-openssl-3.0.x.so.node`). OpenSSL
-# is required by the Prisma engines.
+# Debian (glibc) matches the Prisma schema engine binary used by
+# `prisma migrate deploy` (`schema-engine-debian-openssl-3.0.x`), which links
+# against OpenSSL. better-sqlite3 (the Prisma 7 driver adapter) ships
+# prebuilt binaries for this platform.
 FROM node:22-bookworm-slim AS base
 ENV NEXT_TELEMETRY_DISABLED=1
 WORKDIR /app
@@ -56,15 +57,19 @@ COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
 
-# The full dependency tree so `prisma migrate deploy` can run at startup and
-# so the Prisma client + query engine are guaranteed present at runtime.
-# Copied from the build stage (not deps) because `prisma generate` ran there,
-# producing the generated client the app needs.
+# The full dependency tree so `prisma migrate deploy` can run at startup
+# (Prisma CLI + schema engine) and so the runtime dependencies are present:
+# `@prisma/client` runtime, the better-sqlite3 driver adapter and its native
+# module. Copied from the build stage because `prisma generate` and the
+# native module install both ran by then.
 COPY --from=build --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=build --chown=nextjs:nodejs /app/package.json ./package.json
 
 # Prisma schema + committed migrations for the startup migration step.
 COPY --from=build --chown=nextjs:nodejs /app/prisma ./prisma
+# Prisma 7 reads the datasource URL and schema path from prisma.config.ts, so
+# the CLI needs it alongside the schema for `prisma migrate deploy` at boot.
+COPY --from=build --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts
 
 COPY --chown=nextjs:nodejs docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh

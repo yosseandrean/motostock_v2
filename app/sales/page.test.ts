@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { renderToString } from "react-dom/server";
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/generated/prisma/client";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createTestDb } from "@/test/helpers";
 import { monthKey, monthLabel } from "@/lib/sales";
