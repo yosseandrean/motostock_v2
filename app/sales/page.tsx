@@ -170,7 +170,7 @@ export default async function SalesDashboardPage({
         </section>
 
         <section className="dashboard-section">
-          <h2 className="section-title">Tren Bulanan</h2>
+          <h2 className="section-title">Tren</h2>
           {summary.trend.length === 0 ? (
             <p className="empty-state" role="status">
               Tidak ada data.

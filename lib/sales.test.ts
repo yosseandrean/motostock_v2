@@ -190,6 +190,67 @@ describe("computeSalesSummary", () => {
     ]);
   });
 
+  it("buckets This month weekly in 7-day WIB windows and zero-fills empty weeks", () => {
+    const units: SalesUnit[] = [
+      unit({ id: 1, dateSold: new Date("2026-11-02T00:00:00.000Z") }),
+      unit({ id: 2, dateSold: new Date("2026-11-10T00:00:00.000Z") }),
+    ];
+
+    const summary = computeSalesSummary(units, period("this-month"));
+
+    expect(summary.trend).toEqual([
+      { key: "2026-11-01", label: "1–7 Nov", revenue: 12_000_000, grossProfit: 2_000_000 },
+      { key: "2026-11-08", label: "8–14 Nov", revenue: 12_000_000, grossProfit: 2_000_000 },
+      { key: "2026-11-15", label: "15–21 Nov", revenue: 0, grossProfit: 0 },
+      { key: "2026-11-22", label: "22–28 Nov", revenue: 0, grossProfit: 0 },
+      { key: "2026-11-29", label: "29–30 Nov", revenue: 0, grossProfit: 0 },
+    ]);
+  });
+
+  it("buckets Last month weekly too, even though it spans 31 days", () => {
+    const summary = computeSalesSummary([], period("last-month"));
+
+    expect(summary.trend.map((point) => point.label)).toEqual([
+      "1–7 Okt",
+      "8–14 Okt",
+      "15–21 Okt",
+      "22–28 Okt",
+      "29–31 Okt",
+    ]);
+  });
+
+  it("labels a weekly bucket that crosses a month boundary with both months", () => {
+    const summary = computeSalesSummary([], resolvePeriod("custom", NOW, {
+      from: "2026-09-28",
+      to: "2026-10-10",
+    }));
+
+    expect(summary.trend.map((point) => point.label)).toEqual([
+      "28 Sep–4 Okt",
+      "5–10 Okt",
+    ]);
+  });
+
+  it("switches from weekly to monthly at the 31-day boundary", () => {
+    const weekly = computeSalesSummary([], resolvePeriod("custom", NOW, {
+      from: "2026-10-01",
+      to: "2026-10-31",
+    }));
+    const monthly = computeSalesSummary([], resolvePeriod("custom", NOW, {
+      from: "2026-10-01",
+      to: "2026-11-01",
+    }));
+
+    expect(weekly.trend.map((point) => point.key)).toEqual([
+      "2026-10-01",
+      "2026-10-08",
+      "2026-10-15",
+      "2026-10-22",
+      "2026-10-29",
+    ]);
+    expect(monthly.trend.map((point) => point.key)).toEqual(["2026-10", "2026-11"]);
+  });
+
   it("surfaces loss-making sales (Gross Profit below zero), worst first", () => {
     const units: SalesUnit[] = [
       unit({ id: 1, brand: "HONDA", model: "SCOOPY PRESTIGE", buyPrice: 18_350_000, cost: 0, sellPrice: 15_000_000 }),

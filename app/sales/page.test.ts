@@ -3,7 +3,6 @@ import { renderToString } from "react-dom/server";
 import type { PrismaClient } from "@/lib/generated/prisma/client";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createTestDb } from "@/test/helpers";
-import { monthKey, monthLabel } from "@/lib/sales";
 
 let prisma: PrismaClient;
 type SearchParams = { preset?: string; from?: string; to?: string };
@@ -144,12 +143,13 @@ describe("sales dashboard page", () => {
     expect(html).not.toContain("SUZUKI");
   });
 
-  it("serializes the monthly trend chart data into the page", async () => {
+  it("serializes the weekly trend chart data into the page", async () => {
     await seedUnit(); // buy 10,000,000 + 500,000, sell 13,000,000
 
     const html = await renderPage();
 
-    expect(html).toContain("Tren Bulanan");
+    expect(html).toContain('<h2 class="section-title">Tren</h2>');
+    expect(html).not.toContain("Tren Bulanan");
     // The old server-rendered table is gone; the trend is now a Recharts chart.
     expect(html).not.toContain('<th scope="col">Bulan</th>');
     expect(html).toContain("trend-chart");
@@ -160,14 +160,9 @@ describe("sales dashboard page", () => {
     expect(match).not.toBeNull();
     const trend = JSON.parse(match![1]);
 
-    const key = monthKey(new Date());
-    expect(trend).toEqual([
-      {
-        key,
-        label: monthLabel(key),
-        revenue: 13_000_000,
-        grossProfit: 2_500_000,
-      },
-    ]);
+    // A single This-month period is short enough to be bucketed weekly.
+    expect(trend.length).toBeGreaterThan(1);
+    expect(trend.reduce((sum: number, point: { revenue: number }) => sum + point.revenue, 0)).toBe(13_000_000);
+    expect(trend.reduce((sum: number, point: { grossProfit: number }) => sum + point.grossProfit, 0)).toBe(2_500_000);
   });
 });
