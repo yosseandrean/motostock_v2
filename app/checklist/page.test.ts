@@ -57,7 +57,7 @@ describe("checklist page", () => {
 
     const html = await renderPage();
 
-    expect(html).toContain("Ceklis Data");
+    expect(html).toContain("Data Bermasalah");
     expect(html).toContain("Tidak ada masalah data.");
   });
 
