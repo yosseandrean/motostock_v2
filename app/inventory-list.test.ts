@@ -114,6 +114,18 @@ describe("InventoryList", () => {
     expect(html).not.toContain(">Cari<");
   });
 
+  it("keeps live search and Status filters without a Reset button", () => {
+    const html = render([inStock]);
+
+    expect(html).toContain('type="search"');
+    expect(html).toContain('aria-label="Cari unit"');
+    expect(html).toContain("Semua status");
+    expect(html).toContain('<option value="stok">Stok</option>');
+    expect(html).toContain('<option value="terjual">Terjual</option>');
+    expect(html).not.toContain("Reset");
+    expect(html).not.toContain('type="submit"');
+  });
+
   it("renders a clickable row with the dialog closed and no Merek link", () => {
     const html = render([inStock]);
 
