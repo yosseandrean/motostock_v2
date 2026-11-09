@@ -48,8 +48,11 @@ describe("InventoryList", () => {
     expect(html).toContain("Terjual");
     expect(html).toContain("4.000.000");
 
-    expect(html).toContain('href="/units/1"');
-    expect(html).toContain('href="/units/2"');
+    // Rows are clickable (not a Merek link), and the dialog is closed.
+    expect(html).toContain('role="button"');
+    expect(html).toContain('tabindex="0"');
+    expect(html).not.toContain('href="/units/1"');
+    expect(html).not.toContain('href="/units/2"');
   });
 
   it("shows a Tambah Unit link and omits the Cari submit", () => {
@@ -58,5 +61,16 @@ describe("InventoryList", () => {
     expect(html).toContain('href="/units/new"');
     expect(html).toContain("Tambah Unit");
     expect(html).not.toContain(">Cari<");
+  });
+
+  it("renders a clickable row with the dialog closed and no Merek link", () => {
+    const html = render([inStock]);
+
+    expect(html).toContain('role="button"');
+    expect(html).toContain('tabindex="0"');
+    expect(html).not.toContain('href="/units/1"');
+    expect(html).not.toContain('class="unit-link"');
+    expect(html).not.toContain(">Ubah<");
+    expect(html).not.toContain(">Tutup<");
   });
 });

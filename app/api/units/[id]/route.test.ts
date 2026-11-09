@@ -3,11 +3,14 @@ import type { PrismaClient } from "@/lib/generated/prisma/client";
 import { createSessionToken, SESSION_COOKIE } from "@/lib/session";
 import { createTestDb } from "@/test/helpers";
 
-let prisma: PrismaClient;
-let POST: (
+type RouteHandler = (
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) => Promise<Response>;
+
+let prisma: PrismaClient;
+let POST: RouteHandler;
+let GET: RouteHandler;
 
 const REQUIRED = {
   brand: "HONDA",
@@ -58,6 +61,19 @@ async function submit(
   return POST(request, { params: Promise.resolve({ id: String(id) }) });
 }
 
+async function get(
+  id: string | number,
+  authenticated = true,
+): Promise<Response> {
+  const headers = new Headers();
+  if (authenticated) {
+    const token = await createSessionToken();
+    headers.set("cookie", `${SESSION_COOKIE}=${token}`);
+  }
+  const request = new Request(`http://localhost/api/units/${id}`, { headers });
+  return GET(request, { params: Promise.resolve({ id: String(id) }) });
+}
+
 function errorsFrom(response: Response): Record<string, string> {
   const location = new URL(response.headers.get("location")!);
   return JSON.parse(location.searchParams.get("errors") ?? "{}");
@@ -65,7 +81,9 @@ function errorsFrom(response: Response): Record<string, string> {
 
 beforeAll(async () => {
   prisma = await createTestDb();
-  POST = (await import("@/app/api/units/[id]/route")).POST;
+  const route = await import("@/app/api/units/[id]/route");
+  POST = route.POST;
+  GET = route.GET;
 });
 
 afterAll(async () => {
@@ -220,5 +238,70 @@ describe("POST /api/units/[id]", () => {
     const response = await submit("abc", REQUIRED);
 
     expect(response.status).toBe(404);
+  });
+});
+
+describe("GET /api/units/[id]", () => {
+  it("returns the full Unit as JSON", async () => {
+    const unit = await seedUnit({
+      model: "PCX 160",
+      modelYear: "2025",
+      licensePlate: "B 9 CCC",
+      color: "MERAH",
+      buyPrice: 28_000_000,
+      cost: 200_000,
+      sellPrice: 30_000_000,
+      dateBought: new Date("2026-01-02T12:00:00.000Z"),
+      dateSold: new Date("2026-02-03T12:00:00.000Z"),
+      salesPerson: "ANNA",
+      nameOnRegistration: "BONG, ANTON",
+      chassisSerialNumber: "MH1KFE116SK-296462",
+      engineSerialNumber: "KFE1E-1296587",
+      boughtFrom: "JBA TIPAR",
+      notes: "BELI KEMBALI",
+    });
+
+    const response = await get(unit.id);
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.id).toBe(unit.id);
+    expect(body.brand).toBe("HONDA");
+    expect(body.model).toBe("PCX 160");
+    expect(body.modelYear).toBe("2025");
+    expect(body.licensePlate).toBe("B 9 CCC");
+    expect(body.color).toBe("MERAH");
+    expect(body.buyPrice).toBe(28_000_000);
+    expect(body.cost).toBe(200_000);
+    expect(body.sellPrice).toBe(30_000_000);
+    expect(body.dateBought).toBe("2026-01-02T12:00:00.000Z");
+    expect(body.dateSold).toBe("2026-02-03T12:00:00.000Z");
+    expect(body.salesPerson).toBe("ANNA");
+    expect(body.nameOnRegistration).toBe("BONG, ANTON");
+    expect(body.chassisSerialNumber).toBe("MH1KFE116SK-296462");
+    expect(body.engineSerialNumber).toBe("KFE1E-1296587");
+    expect(body.boughtFrom).toBe("JBA TIPAR");
+    expect(body.notes).toBe("BELI KEMBALI");
+  });
+
+  it("returns 404 for a missing Unit", async () => {
+    const response = await get(999);
+
+    expect(response.status).toBe(404);
+  });
+
+  it("returns 404 for a non-integer id", async () => {
+    const response = await get("abc");
+
+    expect(response.status).toBe(404);
+  });
+
+  it("redirects unauthenticated requests to the login page", async () => {
+    const unit = await seedUnit();
+
+    const response = await get(unit.id, false);
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("http://localhost/login");
   });
 });
