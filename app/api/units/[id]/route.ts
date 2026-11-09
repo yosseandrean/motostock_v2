@@ -8,6 +8,28 @@ type Params = {
   id: string;
 };
 
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<Params> },
+) {
+  if (!(await isAuthenticated(request))) {
+    return NextResponse.redirect(new URL("/login", externalOrigin(request)), 303);
+  }
+
+  const { id } = await params;
+  const numericId = Number(id);
+  if (!Number.isInteger(numericId) || numericId <= 0) {
+    return new NextResponse("Not found", { status: 404 });
+  }
+
+  const unit = await prisma.unit.findUnique({ where: { id: numericId } });
+  if (unit === null) {
+    return new NextResponse("Not found", { status: 404 });
+  }
+
+  return NextResponse.json(unit);
+}
+
 export async function POST(
   request: Request,
   { params }: { params: Promise<Params> },

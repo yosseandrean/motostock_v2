@@ -11,6 +11,7 @@ import {
   statusLabel,
 } from "@/lib/unit";
 import type { InventoryUnit, UnitStatus } from "@/lib/unit";
+import { UnitDetailDialog } from "@/app/unit-detail-dialog";
 
 const HEADERS = [
   "Merek",
@@ -44,6 +45,7 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [status, setStatus] = useState<UnitStatus | undefined>(undefined);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -128,12 +130,21 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
               {visibleUnits.map((unit) => {
                 const profit = grossProfit(unit);
                 return (
-                  <tr key={unit.id}>
-                    <td>
-                      <a className="unit-link" href={`/units/${unit.id}`}>
-                        {unit.brand}
-                      </a>
-                    </td>
+                  <tr
+                    key={unit.id}
+                    className="unit-row"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Detail ${unit.brand} ${unit.model}`}
+                    onClick={() => setSelectedId(unit.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        setSelectedId(unit.id);
+                      }
+                    }}
+                  >
+                    <td>{unit.brand}</td>
                     <td>{unit.model}</td>
                     <td className="num">{unit.modelYear}</td>
                     <td>{unit.licensePlate}</td>
@@ -168,6 +179,11 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
           </table>
         </div>
       )}
+
+      <UnitDetailDialog
+        unitId={selectedId}
+        onClose={() => setSelectedId(null)}
+      />
     </>
   );
 }

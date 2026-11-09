@@ -95,9 +95,11 @@ describe("inventory list page", () => {
     expect(html).toContain("21.000.000");
     expect(html).toContain("4.000.000");
 
-    // Each row links to the Unit detail page.
-    expect(html).toContain(`href="/units/${inStock.id}"`);
-    expect(html).toContain(`href="/units/${sold.id}"`);
+    // Each row is a clickable target, not a Merek detail link.
+    expect(html).toContain('role="button"');
+    expect(html).toContain('tabindex="0"');
+    expect(html).not.toContain(`href="/units/${inStock.id}"`);
+    expect(html).not.toContain(`href="/units/${sold.id}"`);
   });
 
   it("adds a Tambah Unit link and removes the Cari submit", async () => {

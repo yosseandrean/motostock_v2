@@ -202,6 +202,10 @@
     @apply font-semibold text-amber-400 no-underline;
   }
 
+  .unit-row {
+    @apply cursor-pointer;
+  }
+
   /* ---- Status badges ---- */
 
   .status-badge {
@@ -322,5 +326,35 @@
 
   .detail-actions {
     @apply flex items-center gap-4;
+  }
+
+  /* ---- Unit detail dialog ---- */
+
+  .dialog-backdrop {
+    @apply fixed inset-0 z-50 flex items-center justify-center bg-grafit-950/70 p-4;
+  }
+
+  .dialog-panel {
+    @apply max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-grafit-800 bg-grafit-900 p-6 shadow-xl;
+  }
+
+  .dialog-header {
+    @apply mb-4 flex items-center justify-between gap-4;
+  }
+
+  .dialog-title {
+    @apply text-xl font-bold text-grafit-50;
+  }
+
+  .dialog-close {
+    @apply cursor-pointer rounded-lg border border-grafit-700 px-3 py-1.5 text-sm font-semibold text-grafit-200 transition-colors hover:border-grafit-600 hover:text-grafit-50;
+  }
+
+  .dialog-loading {
+    @apply text-grafit-400;
+  }
+
+  .dialog-error {
+    @apply text-red-400;
   }
 }
