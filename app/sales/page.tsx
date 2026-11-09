@@ -8,6 +8,7 @@ import {
   SALES_PRESETS,
 } from "@/lib/sales";
 import type { SalesBreakdownRow, SalesPresetKey } from "@/lib/sales";
+import { TREND_CHART_SERIES } from "@/lib/trend-chart";
 import { MonthlyTrendChart } from "./MonthlyTrendChart";
 import { PeriodFilter } from "./period-filter";
 import { LossTable } from "./loss-table";
@@ -152,6 +153,13 @@ export default async function SalesDashboardPage({
                 id="sales-trend"
                 dangerouslySetInnerHTML={{
                   __html: JSON.stringify(summary.trend),
+                }}
+              />
+              <script
+                type="application/json"
+                id="sales-trend-series"
+                dangerouslySetInnerHTML={{
+                  __html: JSON.stringify(TREND_CHART_SERIES),
                 }}
               />
               <MonthlyTrendChart data={summary.trend} />

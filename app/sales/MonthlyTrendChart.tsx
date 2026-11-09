@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { formatIDR } from "@/lib/format";
 import type { SalesTrendPoint } from "@/lib/sales";
+import { TREND_CHART_SERIES } from "@/lib/trend-chart";
 
 /** Compact IDR labels for the Y axis ticks (e.g. 13000000 → "Rp 13 jt"). */
 const compactIdr = new Intl.NumberFormat("id-ID", {
@@ -39,9 +40,9 @@ const SUCCESS = "#22c55e"; // green-500 (gross profit line)
 
 /**
  * Recharts line chart of the sales trend (weekly or monthly buckets): one
- * series for revenue (Pendapatan, left axis) and one for Gross Profit (Laba
- * Kotor, right axis). Responsive so it fits a phone viewport; the parent
- * passes the already-computed trend points.
+ * series for Gross Profit (Laba Kotor, left axis) and one for revenue
+ * (Pendapatan, right axis). Responsive so it fits a phone viewport; the
+ * parent passes the already-computed trend points.
  */
 export function MonthlyTrendChart({ data }: { data: SalesTrendPoint[] }) {
   return (
@@ -58,23 +59,25 @@ export function MonthlyTrendChart({ data }: { data: SalesTrendPoint[] }) {
             axisLine={{ stroke: GRID }}
             tickLine={{ stroke: GRID }}
           />
-          <YAxis
-            yAxisId="revenue"
-            tick={{ fontSize: 12, fill: AXIS_LABEL }}
-            tickFormatter={(value) => compactIdr.format(value)}
-            axisLine={{ stroke: GRID }}
-            tickLine={{ stroke: GRID }}
-            width={76}
-          />
-          <YAxis
-            yAxisId="profit"
-            orientation="right"
-            tick={{ fontSize: 12, fill: AXIS_LABEL }}
-            tickFormatter={(value) => compactIdr.format(value)}
-            axisLine={{ stroke: GRID }}
-            tickLine={{ stroke: GRID }}
-            width={76}
-          />
+          {TREND_CHART_SERIES.map((series) => (
+            <YAxis
+              key={`axis-${series.dataKey}`}
+              yAxisId={series.dataKey}
+              orientation={series.axis}
+              tick={{ fontSize: 12, fill: AXIS_LABEL }}
+              tickFormatter={(value) => compactIdr.format(value)}
+              axisLine={{ stroke: GRID }}
+              tickLine={{ stroke: GRID }}
+              width={76}
+              label={{
+                value: series.name,
+                angle: series.axis === "left" ? -90 : 90,
+                position: series.axis === "left" ? "insideLeft" : "insideRight",
+                fill: AXIS_LABEL,
+                fontSize: 12,
+              }}
+            />
+          ))}
           <Tooltip
             formatter={(value) => formatIDR(Number(value))}
             cursor={{ stroke: CURSOR }}
@@ -91,24 +94,18 @@ export function MonthlyTrendChart({ data }: { data: SalesTrendPoint[] }) {
               <span style={{ color: LEGEND }}>{value}</span>
             )}
           />
-          <Line
-            yAxisId="revenue"
-            type="monotone"
-            dataKey="revenue"
-            name="Pendapatan"
-            stroke={ACCENT}
-            strokeWidth={2}
-            dot={false}
-          />
-          <Line
-            yAxisId="profit"
-            type="monotone"
-            dataKey="grossProfit"
-            name="Laba Kotor"
-            stroke={SUCCESS}
-            strokeWidth={2}
-            dot={false}
-          />
+          {TREND_CHART_SERIES.map((series) => (
+            <Line
+              key={`line-${series.dataKey}`}
+              yAxisId={series.dataKey}
+              type="monotone"
+              dataKey={series.dataKey}
+              name={series.name}
+              stroke={series.dataKey === "grossProfit" ? SUCCESS : ACCENT}
+              strokeWidth={2}
+              dot={false}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
