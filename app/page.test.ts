@@ -32,6 +32,13 @@ async function renderPage(): Promise<string> {
   return renderToString(element);
 }
 
+function headerTexts(html: string): string[] {
+  const thead = html.match(/<thead>([\s\S]*?)<\/thead>/)?.[1] ?? "";
+  return [...thead.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map(
+    (match) => match[1],
+  );
+}
+
 beforeAll(async () => {
   prisma = await createTestDb();
   InventoryPage = (await import("@/app/page")).default;
@@ -46,7 +53,7 @@ beforeEach(async () => {
 });
 
 describe("inventory list page", () => {
-  it("renders key columns with derived Status and computed Invested / Gross Profit", async () => {
+  it("renders key columns with derived Status and computed Modal / Laba Kotor", async () => {
     const inStock = await seedUnit();
     const sold = await seedUnit({
       brand: "YAMAHA",
@@ -64,31 +71,29 @@ describe("inventory list page", () => {
 
     const html = await renderPage();
 
-    for (const header of [
+    expect(headerTexts(html)).toEqual([
+      "Status",
       "Merek",
       "Model",
       "Tahun",
       "Plat",
-      "Status",
-      "Harga Beli",
+      "Modal",
       "Harga Jual",
+      "Laba Kotor",
       "Tanggal Beli",
       "Tanggal Jual",
       "Sales Person",
-      "Invested",
-      "Gross Profit",
-    ]) {
-      expect(html).toContain(header);
-    }
+    ]);
+    expect(headerTexts(html)).not.toContain("Harga Beli");
 
-    // In Stock Unit: Invested = Buy Price + Cost, Gross Profit blank.
+    // In Stock Unit: Modal = Buy Price + Cost, Laba Kotor blank.
     expect(html).toContain("HONDA");
     expect(html).toContain("BEAT");
     expect(html).toContain("Stok");
     expect(html).toContain("10.500.000");
     expect(html).toContain("—");
 
-    // Sold Unit: Invested and Gross Profit computed from Sell Price.
+    // Sold Unit: Modal and Laba Kotor computed from Sell Price.
     expect(html).toContain("YAMAHA");
     expect(html).toContain("NMAX");
     expect(html).toContain("Terjual");

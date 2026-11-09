@@ -14,26 +14,24 @@ import type { InventoryUnit, UnitStatus } from "@/lib/unit";
 import { UnitDetailDialog } from "@/app/unit-detail-dialog";
 
 const HEADERS = [
+  "Status",
   "Merek",
   "Model",
   "Tahun",
   "Plat",
-  "Status",
-  "Harga Beli",
+  "Modal",
   "Harga Jual",
+  "Laba Kotor",
   "Tanggal Beli",
   "Tanggal Jual",
   "Sales Person",
-  "Invested",
-  "Gross Profit",
 ] as const;
 
 const NUMERIC_HEADERS = new Set([
   "Tahun",
-  "Harga Beli",
+  "Modal",
   "Harga Jual",
-  "Invested",
-  "Gross Profit",
+  "Laba Kotor",
 ]);
 
 /**
@@ -144,10 +142,6 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
                       }
                     }}
                   >
-                    <td>{unit.brand}</td>
-                    <td>{unit.model}</td>
-                    <td className="num">{unit.modelYear}</td>
-                    <td>{unit.licensePlate}</td>
                     <td>
                       <span
                         className={
@@ -159,19 +153,29 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
                         {statusLabel(unit)}
                       </span>
                     </td>
-                    <td className="num">{formatIDR(unit.buyPrice)}</td>
+                    <td>{unit.brand}</td>
+                    <td>{unit.model}</td>
+                    <td className="num">{unit.modelYear}</td>
+                    <td>{unit.licensePlate}</td>
+                    <td className="num">
+                      <span
+                        title={`Harga Beli ${formatIDR(unit.buyPrice)} · Biaya ${formatIDR(unit.cost)}`}
+                        tabIndex={0}
+                      >
+                        {formatIDR(invested(unit))}
+                      </span>
+                    </td>
                     <td className="num">
                       {unit.sellPrice === null
                         ? "—"
                         : formatIDR(unit.sellPrice)}
                     </td>
-                    <td>{unit.dateBoughtLabel}</td>
-                    <td>{unit.dateSoldLabel ?? "—"}</td>
-                    <td>{unit.salesPerson ?? "—"}</td>
-                    <td className="num">{formatIDR(invested(unit))}</td>
                     <td className="num">
                       {profit === null ? "—" : formatIDR(profit)}
                     </td>
+                    <td>{unit.dateBoughtLabel}</td>
+                    <td>{unit.dateSoldLabel ?? "—"}</td>
+                    <td>{unit.salesPerson ?? "—"}</td>
                   </tr>
                 );
               })}
