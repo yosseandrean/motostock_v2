@@ -133,6 +133,12 @@
     @apply mx-auto flex max-w-6xl flex-col gap-6 px-4 py-8;
   }
 
+  /* The Inventori list is the widest table, so it drops the max-width and
+     spans the viewport; other pages keep `.inventory-shell` alone. */
+  .inventory-shell--wide {
+    @apply max-w-none;
+  }
+
   .inventory-header {
     @apply flex flex-wrap items-center justify-between gap-3;
   }

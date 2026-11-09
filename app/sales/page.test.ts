@@ -230,4 +230,11 @@ describe("sales dashboard page", () => {
       axis: "right",
     });
   });
+
+  it("keeps the constrained shell width", async () => {
+    const html = await renderPage();
+
+    expect(html).toContain('<main class="inventory-shell">');
+    expect(html).not.toContain("inventory-shell--wide");
+  });
 });
