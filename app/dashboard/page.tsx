@@ -82,7 +82,7 @@ export default async function InventoryDashboardPage() {
 
         <section className="summary-grid">
           <div className="summary-card">
-            <span className="summary-label">Unit Stok</span>
+            <span className="summary-label">Unit Tersedia</span>
             <span className="summary-value">{dashboard.inStockCount}</span>
           </div>
           <div className="summary-card">
@@ -94,7 +94,7 @@ export default async function InventoryDashboardPage() {
         </section>
 
         <section className="dashboard-section">
-          <h2 className="section-title">Umur Stok</h2>
+          <h2 className="section-title">Umur Tersedia</h2>
           <div className="table-wrap">
             <table className="unit-table">
               <thead>

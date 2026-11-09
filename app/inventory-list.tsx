@@ -83,7 +83,7 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
           onChange={(event) => setStatus(parseUnitStatus(event.target.value))}
         >
           <option value="">Semua status</option>
-          <option value="stok">Stok</option>
+          <option value="stok">Tersedia</option>
           <option value="terjual">Terjual</option>
         </select>
       </div>

@@ -89,7 +89,7 @@ describe("inventory list page", () => {
     // In Stock Unit: Modal = Buy Price + Cost, Laba Kotor blank.
     expect(html).toContain("HONDA");
     expect(html).toContain("BEAT");
-    expect(html).toContain("Stok");
+    expect(html).toContain("Tersedia");
     expect(html).toContain("10.500.000");
     expect(html).toContain("—");
 
@@ -122,7 +122,7 @@ describe("inventory list page", () => {
     expect(filterBar).toContain('type="search"');
     expect(filterBar).toContain('aria-label="Cari unit"');
     expect(filterBar).toContain("Semua status");
-    expect(filterBar).toContain('<option value="stok">Stok</option>');
+    expect(filterBar).toContain('<option value="stok">Tersedia</option>');
     expect(filterBar).toContain('<option value="terjual">Terjual</option>');
     expect(filterBar).not.toContain("Reset");
     expect(filterBar).not.toContain('type="submit"');

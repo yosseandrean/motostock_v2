@@ -53,7 +53,7 @@ export function grossProfit(
 
 /** The derived Status as the Indonesian label shown in the UI. */
 export function statusLabel(unit: Pick<UnitLike, "sellPrice">): string {
-  return isSold(unit) ? "Terjual" : "Stok";
+  return isSold(unit) ? "Terjual" : "Tersedia";
 }
 
 /** Parse an incoming status filter value; undefined when invalid. */
