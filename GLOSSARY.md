@@ -2,6 +2,8 @@
 
 Tracks the secondhand motorcycle inventory and sales of a dealership: which units are in stock, what each cost, and what sold units earned.
 
+Canonical terms are English; user-facing labels are Indonesian. Each entry lists its Indonesian label under `_UI_`. `_Avoid_` terms are not to be used *as the canonical term*.
+
 ## Language
 
 **Unit**:
@@ -14,19 +16,28 @@ _Avoid_: State, condition
 
 **Buy Price**:
 The amount paid to acquire the motorcycle.
-_Avoid_: Purchase price, harga beli, acquisition cost
+_Avoid_: Purchase price, acquisition cost
+_UI_: Harga Beli
 
 **Cost**:
 Additional money spent on a Unit beyond its Buy Price (reconditioning, service, BBN, fees).
 _Avoid_: Expense, overhead, reconditioning cost
+_UI_: Biaya
 
 **Invested**:
 The total money put into a Unit: Buy Price plus Cost.
-_Avoid_: Total cost, capital outlay, modal
+_Avoid_: Total cost, capital outlay
+_UI_: Modal
 
 **Sell Price**:
 The amount a Sold Unit was sold for.
-_Avoid_: Sale price, revenue, harga jual
+_Avoid_: Sale price
+_UI_: Harga Jual
+
+**Revenue**:
+The total Sell Price across all Sold Units in a period.
+_Avoid_: Sales, income, turnover
+_UI_: Pendapatan
 
 **Model Year**:
 The year the motorcycle was produced, distinct from when the shop acquired it (Date Bought).
@@ -43,6 +54,7 @@ _Avoid_: Source, supplier, previous owner
 **Gross Profit**:
 Sell Price minus Invested, for a Sold Unit.
 _Avoid_: Profit, margin, net
+_UI_: Laba Kotor
 
 **Margin**:
 Gross Profit divided by Sell Price, for a Sold Unit.
