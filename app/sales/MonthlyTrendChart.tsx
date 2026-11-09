@@ -38,9 +38,10 @@ const ACCENT = "#fbbf24"; // amber-400 (accent line)
 const SUCCESS = "#22c55e"; // green-500 (gross profit line)
 
 /**
- * Recharts line chart of the monthly sales trend: one series for revenue
- * (Pendapatan) and one for Gross Profit (Laba Kotor). Responsive so it fits a
- * phone viewport; the parent passes the already-computed trend points.
+ * Recharts line chart of the sales trend (weekly or monthly buckets): one
+ * series for revenue (Pendapatan, left axis) and one for Gross Profit (Laba
+ * Kotor, right axis). Responsive so it fits a phone viewport; the parent
+ * passes the already-computed trend points.
  */
 export function MonthlyTrendChart({ data }: { data: SalesTrendPoint[] }) {
   return (
@@ -58,6 +59,16 @@ export function MonthlyTrendChart({ data }: { data: SalesTrendPoint[] }) {
             tickLine={{ stroke: GRID }}
           />
           <YAxis
+            yAxisId="revenue"
+            tick={{ fontSize: 12, fill: AXIS_LABEL }}
+            tickFormatter={(value) => compactIdr.format(value)}
+            axisLine={{ stroke: GRID }}
+            tickLine={{ stroke: GRID }}
+            width={76}
+          />
+          <YAxis
+            yAxisId="profit"
+            orientation="right"
             tick={{ fontSize: 12, fill: AXIS_LABEL }}
             tickFormatter={(value) => compactIdr.format(value)}
             axisLine={{ stroke: GRID }}
@@ -81,6 +92,7 @@ export function MonthlyTrendChart({ data }: { data: SalesTrendPoint[] }) {
             )}
           />
           <Line
+            yAxisId="revenue"
             type="monotone"
             dataKey="revenue"
             name="Pendapatan"
@@ -89,6 +101,7 @@ export function MonthlyTrendChart({ data }: { data: SalesTrendPoint[] }) {
             dot={false}
           />
           <Line
+            yAxisId="profit"
             type="monotone"
             dataKey="grossProfit"
             name="Laba Kotor"

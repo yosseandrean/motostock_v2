@@ -1,14 +1,24 @@
 /**
  * Sales dashboard computations: WIB period resolution, headline figures
  * (Units Sold, revenue, Gross Profit, Margin), Brand/Model/Sales Person
- * breakdowns, a monthly trend, and loss-making sales. Kept as pure functions
- * so the sales page and its tests share one source of truth.
+ * breakdowns, a trend, and loss-making sales. The trend is weekly for short
+ * periods (≤ 31 days) and monthly otherwise. Kept as pure functions so the
+ * sales page and its tests share one source of truth.
  */
 
 import { grossProfit } from "@/lib/unit";
 
 /** WIB (Western Indonesian Time) is UTC+7. */
 export const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const WEEK_MS = 7 * DAY_MS;
+
+/**
+ * A period is bucketed weekly only when both bounds are known and the span is
+ * at most 31 days (a single WIB calendar month or a short custom range).
+ */
+const WEEKLY_MAX_SPAN_MS = 31 * DAY_MS;
 
 export const SALES_PRESETS = [
   { key: "this-month", label: "Bulan ini" },
@@ -87,6 +97,21 @@ const ID_MONTHS = [
   "Oktober",
   "November",
   "Desember",
+] as const;
+
+const ID_MONTHS_SHORT = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Agu",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Des",
 ] as const;
 
 /** The UTC instant of a WIB-midnight calendar day (year/monthIndex/day). */
@@ -187,6 +212,90 @@ export function monthLabel(key: string): string {
   return `${ID_MONTHS[month - 1]} ${year}`;
 }
 
+/** The WIB calendar parts (year, monthIndex, day) of a UTC instant. */
+function wibCalendar(date: Date): {
+  year: number;
+  monthIndex: number;
+  day: number;
+} {
+  const wib = new Date(date.getTime() + WIB_OFFSET_MS);
+  return {
+    year: wib.getUTCFullYear(),
+    monthIndex: wib.getUTCMonth(),
+    day: wib.getUTCDate(),
+  };
+}
+
+/** The WIB calendar date of a UTC instant, as a stable `YYYY-MM-DD` key. */
+function weekDateKey(date: Date): string {
+  const { year, monthIndex, day } = wibCalendar(date);
+  return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+/** The start of the `index`-th 7-day window after the period start. */
+function weekStart(from: Date, index: number): Date {
+  return new Date(from.getTime() + index * WEEK_MS);
+}
+
+/** The key of the weekly bucket a sale falls into, anchored at `from`. */
+function weekBucketKey(from: Date, dateSold: Date): string {
+  const index = Math.floor((dateSold.getTime() - from.getTime()) / WEEK_MS);
+  return weekDateKey(weekStart(from, index));
+}
+
+/** True when `period` should be bucketed weekly rather than monthly. */
+function isWeeklyPeriod(period: SalesPeriod): boolean {
+  return (
+    period.from !== null &&
+    period.to !== null &&
+    period.to.getTime() - period.from.getTime() <= WEEKLY_MAX_SPAN_MS
+  );
+}
+
+/** Short Indonesian day range for a weekly bucket, clipped to the period. */
+function weekBucketLabel(from: Date, index: number, period: SalesPeriod): string {
+  const start = weekStart(from, index);
+  const end = new Date(
+    Math.min(start.getTime() + WEEK_MS, (period.to as Date).getTime()),
+  );
+  const startParts = wibCalendar(start);
+  const endParts = wibCalendar(new Date(end.getTime() - 1));
+  const startMonth = ID_MONTHS_SHORT[startParts.monthIndex];
+  const endMonth = ID_MONTHS_SHORT[endParts.monthIndex];
+
+  if (
+    startParts.year === endParts.year &&
+    startParts.monthIndex === endParts.monthIndex
+  ) {
+    return `${startParts.day}–${endParts.day} ${startMonth}`;
+  }
+  if (startParts.year === endParts.year) {
+    return `${startParts.day} ${startMonth}–${endParts.day} ${endMonth}`;
+  }
+  return `${startParts.day} ${startMonth} ${startParts.year}–${endParts.day} ${endMonth} ${endParts.year}`;
+}
+
+/** Enumerate weekly buckets across the period, zero-filling empty weeks. */
+function buildWeeklyTrend(
+  buckets: Map<string, { revenue: number; grossProfit: number }>,
+  period: SalesPeriod,
+): SalesTrendPoint[] {
+  const from = period.from as Date;
+  const to = period.to as Date;
+  const points: SalesTrendPoint[] = [];
+  for (let index = 0; weekStart(from, index).getTime() < to.getTime(); index += 1) {
+    const key = weekDateKey(weekStart(from, index));
+    const bucket = buckets.get(key);
+    points.push({
+      key,
+      label: weekBucketLabel(from, index, period),
+      revenue: bucket?.revenue ?? 0,
+      grossProfit: bucket?.grossProfit ?? 0,
+    });
+  }
+  return points;
+}
+
 /** A Unit counts as a sale only when Sell Price and Date Sold are both set. */
 export function isSale(unit: Pick<SalesUnit, "sellPrice" | "dateSold">): boolean {
   return unit.sellPrice !== null && unit.dateSold !== null;
@@ -269,7 +378,8 @@ export function computeSalesSummary(
   const brandMap = new Map<string, { count: number; revenue: number; grossProfit: number }>();
   const modelMap = new Map<string, { count: number; revenue: number; grossProfit: number }>();
   const personMap = new Map<string, { count: number; revenue: number; grossProfit: number }>();
-  const monthMap = new Map<string, { revenue: number; grossProfit: number }>();
+  const trendBuckets = new Map<string, { revenue: number; grossProfit: number }>();
+  const weekly = isWeeklyPeriod(period);
   const losses: SalesLoss[] = [];
 
   for (const sale of sales) {
@@ -282,10 +392,12 @@ export function computeSalesSummary(
     accumulate(modelMap, sale.model, sellPrice, profit);
     accumulate(personMap, sale.salesPerson ?? "—", sellPrice, profit);
 
-    const key = monthKey(sale.dateSold as Date);
-    const bucket = monthMap.get(key);
+    const key = weekly
+      ? weekBucketKey(period.from as Date, sale.dateSold as Date)
+      : monthKey(sale.dateSold as Date);
+    const bucket = trendBuckets.get(key);
     if (bucket === undefined) {
-      monthMap.set(key, { revenue: sellPrice, grossProfit: profit });
+      trendBuckets.set(key, { revenue: sellPrice, grossProfit: profit });
     } else {
       bucket.revenue += sellPrice;
       bucket.grossProfit += profit;
@@ -308,18 +420,20 @@ export function computeSalesSummary(
   }
 
   const trend: SalesTrendPoint[] = [];
-  if (sales.length > 0 || period.from !== null || period.to !== null) {
+  if (weekly) {
+    trend.push(...buildWeeklyTrend(trendBuckets, period));
+  } else if (sales.length > 0 || period.from !== null || period.to !== null) {
     const fromKey =
       period.from !== null
         ? monthKey(period.from)
-        : [...monthMap.keys()].sort()[0];
+        : [...trendBuckets.keys()].sort()[0];
     const toKey =
       period.to !== null
         ? monthKey(new Date(period.to.getTime() - 1))
-        : [...monthMap.keys()].sort().at(-1);
+        : [...trendBuckets.keys()].sort().at(-1);
     if (fromKey !== undefined && toKey !== undefined) {
       for (const key of enumerateMonthKeys(fromKey, toKey)) {
-        const bucket = monthMap.get(key);
+        const bucket = trendBuckets.get(key);
         trend.push({
           key,
           label: monthLabel(key),
