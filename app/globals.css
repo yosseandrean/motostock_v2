@@ -231,6 +231,10 @@
     @apply text-3xl font-bold text-grafit-50;
   }
 
+  .summary-value--money {
+    @apply break-words text-xl sm:text-2xl lg:text-3xl;
+  }
+
   .loss-value {
     @apply font-semibold text-red-400 tabular-nums;
   }
