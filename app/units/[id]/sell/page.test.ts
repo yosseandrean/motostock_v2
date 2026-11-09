@@ -1,7 +1,7 @@
 import type { ReactElement } from "react";
 import { renderToString } from "react-dom/server";
 import type { PrismaClient } from "@/lib/generated/prisma/client";
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createTestDb } from "@/test/helpers";
 
 let prisma: PrismaClient;
@@ -71,12 +71,18 @@ describe("sell unit page", () => {
     expect(html).toContain('class="nav-link" href="/">Batal');
   });
 
-  it("identifies the Unit being sold and pre-fills Date Sold with a date", async () => {
-    const unit = await seedUnit({ model: "PCX 160", licensePlate: "B 9 CCC" });
-    const html = await renderPage(unit.id);
+  it("identifies the Unit being sold and defaults Date Sold to today's WIB date", async () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-11-08T17:30:00.000Z"));
+    try {
+      const unit = await seedUnit({ model: "PCX 160", licensePlate: "B 9 CCC" });
+      const html = await renderPage(unit.id);
 
-    expect(html).toContain("HONDA PCX 160 · B 9 CCC");
-    expect(html).toMatch(/value="\d{4}-\d{2}-\d{2}"/);
+      expect(html).toContain("HONDA PCX 160 · B 9 CCC");
+      expect(html).toContain('value="2026-11-09"');
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("offers the Sales Person catalog from existing Units", async () => {

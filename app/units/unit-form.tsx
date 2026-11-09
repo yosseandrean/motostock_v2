@@ -1,3 +1,5 @@
+import { SellFields } from "./sell-fields";
+
 export type FormFieldMap = Record<string, string>;
 
 export type UnitFormProps = {
@@ -281,59 +283,15 @@ export function UnitForm({
           defaultValue={values.notes ?? ""}
         />
 
-        <label className="field-label" htmlFor="sellPrice">
-          Harga Jual
-        </label>
-        <input
-          id="sellPrice"
-          name="sellPrice"
-          type="text"
-          inputMode="numeric"
-          className="field-input"
-          defaultValue={values.sellPrice ?? ""}
-          aria-invalid={errorFor(errors, "sellPrice") ? true : undefined}
+        <SellFields
+          values={{
+            sellPrice: values.sellPrice ?? "",
+            dateSold: values.dateSold ?? "",
+            salesPerson: values.salesPerson ?? "",
+          }}
+          errors={errors}
+          salesPersons={salesPersons}
         />
-        {errorFor(errors, "sellPrice") ? (
-          <p className="field-error" role="alert">
-            {errorFor(errors, "sellPrice")}
-          </p>
-        ) : null}
-
-        <label className="field-label" htmlFor="dateSold">
-          Tanggal Jual
-        </label>
-        <input
-          id="dateSold"
-          name="dateSold"
-          type="date"
-          className="field-input"
-          defaultValue={values.dateSold ?? ""}
-          aria-invalid={errorFor(errors, "dateSold") ? true : undefined}
-        />
-        {errorFor(errors, "dateSold") ? (
-          <p className="field-error" role="alert">
-            {errorFor(errors, "dateSold")}
-          </p>
-        ) : null}
-
-        <label className="field-label" htmlFor="salesPerson">
-          Sales Person
-        </label>
-        <input
-          id="salesPerson"
-          name="salesPerson"
-          type="text"
-          className="field-input"
-          list="sales-person-options"
-          defaultValue={values.salesPerson ?? ""}
-        />
-        <datalist id="sales-person-options">
-          {salesPersons.map((entry) => (
-            <option key={entry} value={entry}>
-              {entry}
-            </option>
-          ))}
-        </datalist>
       </div>
 
       <div className="form-actions">

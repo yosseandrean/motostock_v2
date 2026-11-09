@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { listSalesPersons } from "@/lib/catalog";
 import { dateOnlyWib } from "@/lib/unit-sell";
 import { parseRecord } from "../../unit-form";
+import { SellFields } from "../../sell-fields";
 import { SiteNav } from "@/app/site-nav";
 
 export const metadata: Metadata = {
@@ -67,61 +68,12 @@ export default async function SellUnitPage({
           className="unit-form"
         >
           <div className="form-grid">
-            <label className="field-label" htmlFor="sellPrice">
-              Harga Jual
-            </label>
-            <input
-              id="sellPrice"
-              name="sellPrice"
-              type="text"
-              inputMode="numeric"
-              className="field-input"
-              defaultValue={values.sellPrice}
-              required
-              aria-invalid={errors.sellPrice ? true : undefined}
+            <SellFields
+              values={values}
+              errors={errors}
+              salesPersons={salesPersons}
+              requireSellPriceAndDate
             />
-            {errors.sellPrice ? (
-              <p className="field-error" role="alert">
-                {errors.sellPrice}
-              </p>
-            ) : null}
-
-            <label className="field-label" htmlFor="dateSold">
-              Tanggal Jual
-            </label>
-            <input
-              id="dateSold"
-              name="dateSold"
-              type="date"
-              className="field-input"
-              defaultValue={values.dateSold}
-              required
-              aria-invalid={errors.dateSold ? true : undefined}
-            />
-            {errors.dateSold ? (
-              <p className="field-error" role="alert">
-                {errors.dateSold}
-              </p>
-            ) : null}
-
-            <label className="field-label" htmlFor="salesPerson">
-              Sales Person
-            </label>
-            <input
-              id="salesPerson"
-              name="salesPerson"
-              type="text"
-              className="field-input"
-              list="sales-person-options"
-              defaultValue={values.salesPerson}
-            />
-            <datalist id="sales-person-options">
-              {salesPersons.map((entry) => (
-                <option key={entry} value={entry}>
-                  {entry}
-                </option>
-              ))}
-            </datalist>
           </div>
 
           <div className="form-actions">
