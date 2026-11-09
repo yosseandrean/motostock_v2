@@ -206,4 +206,28 @@ describe("sales dashboard page", () => {
     expect(trend.reduce((sum: number, point: { revenue: number }) => sum + point.revenue, 0)).toBe(13_000_000);
     expect(trend.reduce((sum: number, point: { grossProfit: number }) => sum + point.grossProfit, 0)).toBe(2_500_000);
   });
+
+  it("labels the Y axes with Laba Kotor on the left and Pendapatan on the right", async () => {
+    await seedUnit();
+
+    const html = await renderPage();
+
+    const match = html.match(
+      /<script type="application\/json" id="sales-trend-series">(.*?)<\/script>/,
+    );
+    expect(match).not.toBeNull();
+    const series = JSON.parse(match![1]);
+
+    expect(series).toHaveLength(2);
+    expect(series[0]).toEqual({
+      dataKey: "grossProfit",
+      name: "Laba Kotor",
+      axis: "left",
+    });
+    expect(series[1]).toEqual({
+      dataKey: "revenue",
+      name: "Pendapatan",
+      axis: "right",
+    });
+  });
 });
