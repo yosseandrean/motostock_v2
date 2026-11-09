@@ -58,7 +58,9 @@ COPY --from=build --chown=nextjs:nodejs /app/public ./public
 
 # The full dependency tree so `prisma migrate deploy` can run at startup and
 # so the Prisma client + query engine are guaranteed present at runtime.
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+# Copied from the build stage (not deps) because `prisma generate` ran there,
+# producing the generated client the app needs.
+COPY --from=build --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=build --chown=nextjs:nodejs /app/package.json ./package.json
 
 # Prisma schema + committed migrations for the startup migration step.

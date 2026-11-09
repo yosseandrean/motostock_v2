@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { exportInventoryCsv } from "@/lib/export";
+import { externalOrigin } from "@/lib/request-url";
 
 export async function GET(request: Request) {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.redirect(new URL("/login", request.url), 303);
+    return NextResponse.redirect(new URL("/login", externalOrigin(request)), 303);
   }
 
   const csv = await exportInventoryCsv();

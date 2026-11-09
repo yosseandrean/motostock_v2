@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { externalOrigin } from "@/lib/request-url";
 
 type Params = {
   id: string;
@@ -11,7 +12,7 @@ export async function POST(
   { params }: { params: Promise<Params> },
 ) {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.redirect(new URL("/login", request.url), 303);
+    return NextResponse.redirect(new URL("/login", externalOrigin(request)), 303);
   }
 
   const { id } = await params;
@@ -29,5 +30,5 @@ export async function POST(
   }
 
   await prisma.unit.delete({ where: { id: numericId } });
-  return NextResponse.redirect(new URL("/", request.url), 303);
+  return NextResponse.redirect(new URL("/", externalOrigin(request)), 303);
 }

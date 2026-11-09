@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parseUnitForm, readUnitForm } from "@/lib/unit-create";
+import { externalOrigin } from "@/lib/request-url";
 
 type Params = {
   id: string;
@@ -12,7 +13,7 @@ export async function POST(
   { params }: { params: Promise<Params> },
 ) {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.redirect(new URL("/login", request.url), 303);
+    return NextResponse.redirect(new URL("/login", externalOrigin(request)), 303);
   }
 
   const { id } = await params;
@@ -33,7 +34,7 @@ export async function POST(
   const parsed = parseUnitForm(values);
 
   if (!parsed.ok) {
-    const url = new URL(`/units/${numericId}/edit`, request.url);
+    const url = new URL(`/units/${numericId}/edit`, externalOrigin(request));
     url.searchParams.set("errors", JSON.stringify(parsed.errors));
     url.searchParams.set("values", JSON.stringify(values));
     return NextResponse.redirect(url, 303);
@@ -62,7 +63,7 @@ export async function POST(
 
   await prisma.unit.update({ where: { id: numericId }, data: parsed.data });
 
-  const url = new URL(`/units/${numericId}`, request.url);
+  const url = new URL(`/units/${numericId}`, externalOrigin(request));
   if (warnings.length > 0) {
     url.searchParams.set("warning", warnings.join(","));
   }
