@@ -5,7 +5,7 @@ import type { ChecklistCategoryKey } from "@/lib/checklist";
 import { SiteNav } from "@/app/site-nav";
 
 export const metadata: Metadata = {
-  title: "Ceklis Data — Motostock",
+  title: "Data Bermasalah — Motostock",
 };
 
 export const dynamic = "force-dynamic";
@@ -38,7 +38,7 @@ export default async function ChecklistPage() {
     <>
       <SiteNav active="ceklis" />
       <main className="inventory-shell">
-        <h1 className="inventory-title">Ceklis Data</h1>
+        <h1 className="inventory-title">Data Bermasalah</h1>
 
         <p className="import-hint">
           Daftar masalah data ditemukan tanpa mengubah data apa pun. Buka unit
