@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ChecklistItem } from "@/lib/checklist";
 import { UnitDetailDialog } from "@/app/unit-detail-dialog";
+import { ClickableUnitRow } from "@/app/unit-row";
 
 /**
  * One data-issue category table on the checklist page. The server page passes
@@ -27,25 +28,16 @@ export function ChecklistTable({ items }: { items: ChecklistItem[] }) {
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr
+              <ClickableUnitRow
                 key={item.id}
-                className="unit-row"
-                role="button"
-                tabIndex={0}
-                aria-label={`Detail ${item.brand} ${item.model}`}
-                onClick={() => setSelectedId(item.id)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setSelectedId(item.id);
-                  }
-                }}
+                unit={item}
+                onOpen={setSelectedId}
               >
                 <td>{item.brand}</td>
                 <td>{item.model}</td>
                 <td>{item.licensePlate}</td>
                 <td>{item.detail === "" ? "—" : item.detail}</td>
-              </tr>
+              </ClickableUnitRow>
             ))}
           </tbody>
         </table>

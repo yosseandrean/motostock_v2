@@ -12,6 +12,7 @@ import {
 } from "@/lib/unit";
 import type { InventoryUnit, UnitStatus } from "@/lib/unit";
 import { UnitDetailDialog } from "@/app/unit-detail-dialog";
+import { ClickableUnitRow } from "@/app/unit-row";
 
 const HEADERS = [
   "Status",
@@ -128,19 +129,10 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
               {visibleUnits.map((unit) => {
                 const profit = grossProfit(unit);
                 return (
-                  <tr
+                  <ClickableUnitRow
                     key={unit.id}
-                    className="unit-row"
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Detail ${unit.brand} ${unit.model}`}
-                    onClick={() => setSelectedId(unit.id)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        setSelectedId(unit.id);
-                      }
-                    }}
+                    unit={unit}
+                    onOpen={setSelectedId}
                   >
                     <td>
                       <span
@@ -176,7 +168,7 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
                     <td>{unit.dateBoughtLabel}</td>
                     <td>{unit.dateSoldLabel ?? "—"}</td>
                     <td>{unit.salesPerson ?? "—"}</td>
-                  </tr>
+                  </ClickableUnitRow>
                 );
               })}
             </tbody>

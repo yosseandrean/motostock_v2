@@ -41,7 +41,7 @@ function BreakdownTable({
           <tr>
             <th scope="col">{label}</th>
             <th scope="col">Unit</th>
-            <th scope="col">Invested</th>
+            <th scope="col">Modal</th>
           </tr>
         </thead>
         <tbody>
@@ -86,7 +86,7 @@ export default async function InventoryDashboardPage() {
             <span className="summary-value">{dashboard.inStockCount}</span>
           </div>
           <div className="summary-card">
-            <span className="summary-label">Total Invested</span>
+            <span className="summary-label">Total Modal</span>
             <span className="summary-value">
               {formatIDR(dashboard.totalInvested)}
             </span>
@@ -101,7 +101,7 @@ export default async function InventoryDashboardPage() {
                 <tr>
                   <th scope="col">Kelompok</th>
                   <th scope="col">Unit</th>
-                  <th scope="col">Invested</th>
+                  <th scope="col">Modal</th>
                 </tr>
               </thead>
               <tbody>

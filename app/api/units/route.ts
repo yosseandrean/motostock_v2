@@ -39,7 +39,7 @@ export async function POST(request: Request) {
 
   const unit = await prisma.unit.create({ data: parsed.data });
 
-  const url = new URL(`/units/${unit.id}`, externalOrigin(request));
+  const url = new URL(`/units/${unit.id}/edit`, externalOrigin(request));
   if (warnings.length > 0) {
     url.searchParams.set("warning", warnings.join(","));
   }

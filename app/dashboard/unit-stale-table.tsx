@@ -4,6 +4,7 @@ import { useState } from "react";
 import { formatIDR } from "@/lib/format";
 import type { StaleUnit } from "@/lib/dashboard";
 import { UnitDetailDialog } from "@/app/unit-detail-dialog";
+import { ClickableUnitRow } from "@/app/unit-row";
 
 /**
  * The Dashboard "Unit Stale" table. The server page passes the serialized
@@ -24,24 +25,15 @@ export function UnitStaleTable({ units }: { units: StaleUnit[] }) {
               <th scope="col">Warna</th>
               <th scope="col">Plat</th>
               <th scope="col">Umur (hari)</th>
-              <th scope="col">Invested</th>
+              <th scope="col">Modal</th>
             </tr>
           </thead>
           <tbody>
             {units.map((unit) => (
-              <tr
+              <ClickableUnitRow
                 key={unit.id}
-                className="unit-row"
-                role="button"
-                tabIndex={0}
-                aria-label={`Detail ${unit.brand} ${unit.model}`}
-                onClick={() => setSelectedId(unit.id)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setSelectedId(unit.id);
-                  }
-                }}
+                unit={unit}
+                onOpen={setSelectedId}
               >
                 <td>{unit.brand}</td>
                 <td>{unit.model}</td>
@@ -49,7 +41,7 @@ export function UnitStaleTable({ units }: { units: StaleUnit[] }) {
                 <td>{unit.licensePlate}</td>
                 <td>{unit.age}</td>
                 <td>{formatIDR(unit.invested)}</td>
-              </tr>
+              </ClickableUnitRow>
             ))}
           </tbody>
         </table>

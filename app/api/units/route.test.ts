@@ -59,7 +59,7 @@ describe("POST /api/units", () => {
     const response = await submit(REQUIRED);
 
     expect(response.status).toBe(303);
-    expect(response.headers.get("location")).toMatch(/\/units\/\d+$/);
+    expect(response.headers.get("location")).toMatch(/\/units\/\d+\/edit$/);
     expect(await prisma.unit.count()).toBe(1);
 
     const unit = await prisma.unit.findFirst();
@@ -145,6 +145,7 @@ describe("POST /api/units", () => {
 
     expect(response.status).toBe(303);
     expect(response.headers.get("location")).toContain("warning=chassis");
+    expect(response.headers.get("location")).toContain("/edit");
     expect(await prisma.unit.count()).toBe(2);
   });
 
@@ -167,6 +168,32 @@ describe("POST /api/units", () => {
     });
 
     expect(response.headers.get("location")).toContain("warning=license");
+    expect(response.headers.get("location")).toContain("/edit");
+    expect(await prisma.unit.count()).toBe(2);
+  });
+
+  it("warns on both a duplicate Chassis Serial Number and License Plate", async () => {
+    await prisma.unit.create({
+      data: {
+        ...REQUIRED,
+        modelYear: "2023",
+        buyPrice: 10_000_000,
+        cost: 0,
+        color: "MERAH",
+        dateBought: new Date("2026-01-01T00:00:00.000Z"),
+        chassisSerialNumber: "MH1ABC123",
+      },
+    });
+
+    const response = await submit({
+      ...REQUIRED,
+      chassisSerialNumber: "MH1ABC123",
+    });
+
+    expect(response.status).toBe(303);
+    const location = new URL(response.headers.get("location")!);
+    expect(location.pathname).toMatch(/\/units\/\d+\/edit$/);
+    expect(location.searchParams.get("warning")).toBe("chassis,license");
     expect(await prisma.unit.count()).toBe(2);
   });
 
