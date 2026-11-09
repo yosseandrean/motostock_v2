@@ -5,8 +5,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createTestDb } from "@/test/helpers";
 
 let prisma: PrismaClient;
-type SearchParams = { q?: string; status?: string };
-let InventoryPage: (props: { searchParams: Promise<SearchParams> }) => Promise<ReactElement>;
+let InventoryPage: () => Promise<ReactElement>;
 
 async function seedUnit(overrides: Record<string, unknown> = {}) {
   return prisma.unit.create({
@@ -28,8 +27,8 @@ async function seedUnit(overrides: Record<string, unknown> = {}) {
   });
 }
 
-async function renderPage(params: SearchParams = {}): Promise<string> {
-  const element = await InventoryPage({ searchParams: Promise.resolve(params) });
+async function renderPage(): Promise<string> {
+  const element = await InventoryPage();
   return renderToString(element);
 }
 
@@ -101,38 +100,12 @@ describe("inventory list page", () => {
     expect(html).toContain(`href="/units/${sold.id}"`);
   });
 
-  it("filters by free text across Brand, Model, License Plate, Chassis Serial Number and Sales Person", async () => {
-    await seedUnit();
-    await seedUnit({
-      brand: "YAMAHA",
-      model: "NMAX",
-      licensePlate: "B 2 BBB",
-      salesPerson: "BUDI",
-      chassisSerialNumber: "MH1XYZ999",
-    });
+  it("adds a Tambah Unit link and removes the Cari submit", async () => {
+    const html = await renderPage();
 
-    const html = await renderPage({ q: "yamaha" });
-
-    expect(html).toContain("YAMAHA");
-    expect(html).not.toContain("HONDA");
-  });
-
-  it("filters by derived Status", async () => {
-    await seedUnit();
-    await seedUnit({
-      brand: "YAMAHA",
-      model: "NMAX",
-      sellPrice: 25_000_000,
-      dateSold: new Date("2025-12-01T12:00:00.000Z"),
-    });
-
-    const inStockHtml = await renderPage({ status: "stok" });
-    expect(inStockHtml).toContain("HONDA");
-    expect(inStockHtml).not.toContain("YAMAHA");
-
-    const soldHtml = await renderPage({ status: "terjual" });
-    expect(soldHtml).toContain("YAMAHA");
-    expect(soldHtml).not.toContain("HONDA");
+    expect(html).toContain('href="/units/new"');
+    expect(html).toContain("Tambah Unit");
+    expect(html).not.toContain(">Cari<");
   });
 
   it("shows the empty state when there are no Units", async () => {

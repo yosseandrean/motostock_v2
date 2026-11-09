@@ -4,6 +4,7 @@ import {
   grossProfit,
   invested,
   isSold,
+  parseUnitStatus,
   statusLabel,
 } from "@/lib/unit";
 import type { UnitLike } from "@/lib/unit";
@@ -51,6 +52,19 @@ describe("statusLabel", () => {
   it("derives Sold from a present Sell Price", () => {
     const sold = { ...base, sellPrice: 12_000_000 };
     expect(statusLabel(sold)).toBe("Terjual");
+  });
+});
+
+describe("parseUnitStatus", () => {
+  it("accepts the two canonical status values", () => {
+    expect(parseUnitStatus("stok")).toBe("stok");
+    expect(parseUnitStatus("terjual")).toBe("terjual");
+  });
+
+  it("rejects unknown or missing values", () => {
+    expect(parseUnitStatus(undefined)).toBeUndefined();
+    expect(parseUnitStatus("")).toBeUndefined();
+    expect(parseUnitStatus("sold")).toBeUndefined();
   });
 });
 

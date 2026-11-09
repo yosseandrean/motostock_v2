@@ -41,7 +41,7 @@ export default async function NewUnitPage({
 
   return (
     <>
-      <SiteNav active="tambah" />
+      <SiteNav />
       <main className="inventory-shell">
         <h1 className="inventory-title">Tambah Unit</h1>
 

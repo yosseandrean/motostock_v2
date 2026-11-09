@@ -4,7 +4,6 @@ export type SiteNavSection =
   | "penjualan"
   | "ceklis"
   | "import"
-  | "tambah"
   | "ekspor";
 
 type NavItem = {
@@ -19,7 +18,6 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/sales", label: "Penjualan", key: "penjualan" },
   { href: "/checklist", label: "Ceklis Data", key: "ceklis" },
   { href: "/import", label: "Impor CSV", key: "import" },
-  { href: "/units/new", label: "Tambah Unit", key: "tambah" },
   { href: "/api/export", label: "Ekspor CSV", key: "ekspor" },
 ];
 
