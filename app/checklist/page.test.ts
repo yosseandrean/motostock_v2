@@ -120,4 +120,11 @@ describe("checklist page", () => {
     expect(html).toContain('class="checklist-count">19</span>');
     expect(html).toContain("B 4529 UCB");
   });
+
+  it("keeps the constrained shell width", async () => {
+    const html = await renderPage();
+
+    expect(html).toContain('<main class="inventory-shell">');
+    expect(html).not.toContain("inventory-shell--wide");
+  });
 });

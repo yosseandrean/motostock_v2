@@ -133,4 +133,14 @@ describe("inventory list page", () => {
 
     expect(html).toContain("Belum ada unit.");
   });
+
+  it("uses the full-width inventory shell so the table can span the screen", async () => {
+    await seedUnit();
+    const html = await renderPage();
+
+    expect(html).toContain(
+      '<main class="inventory-shell inventory-shell--wide">',
+    );
+    expect(html).toContain('class="table-wrap"');
+  });
 });

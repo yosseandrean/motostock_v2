@@ -132,4 +132,11 @@ describe("inventory dashboard page", () => {
     expect(html).toContain("Tidak ada unit stale.");
     expect(html).toContain("Tidak ada data.");
   });
+
+  it("keeps the constrained shell width", async () => {
+    const html = await renderPage();
+
+    expect(html).toContain('<main class="inventory-shell">');
+    expect(html).not.toContain("inventory-shell--wide");
+  });
 });

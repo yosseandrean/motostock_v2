@@ -38,7 +38,7 @@ export default async function InventoryPage() {
   return (
     <>
       <SiteNav active="inventori" />
-      <main className="inventory-shell">
+      <main className="inventory-shell inventory-shell--wide">
         <InventoryList units={inventoryUnits} />
       </main>
     </>
