@@ -115,6 +115,19 @@ describe("inventory list page", () => {
     expect(html).not.toContain(">Cari<");
   });
 
+  it("renders live search and Status filters without a Reset button", async () => {
+    const html = await renderPage();
+    const filterBar = html.match(/<div class="filter-bar">([\s\S]*?)<\/div>/)?.[1] ?? "";
+
+    expect(filterBar).toContain('type="search"');
+    expect(filterBar).toContain('aria-label="Cari unit"');
+    expect(filterBar).toContain("Semua status");
+    expect(filterBar).toContain('<option value="stok">Stok</option>');
+    expect(filterBar).toContain('<option value="terjual">Terjual</option>');
+    expect(filterBar).not.toContain("Reset");
+    expect(filterBar).not.toContain('type="submit"');
+  });
+
   it("shows the empty state when there are no Units", async () => {
     const html = await renderPage();
 

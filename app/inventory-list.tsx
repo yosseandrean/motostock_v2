@@ -58,14 +58,6 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
     [units, debouncedQuery, status],
   );
 
-  const hasFilter = query !== "" || status !== undefined;
-
-  function resetFilters() {
-    setQuery("");
-    setDebouncedQuery("");
-    setStatus(undefined);
-  }
-
   return (
     <>
       <div className="inventory-header">
@@ -94,15 +86,6 @@ export function InventoryList({ units }: { units: InventoryUnit[] }) {
           <option value="stok">Stok</option>
           <option value="terjual">Terjual</option>
         </select>
-        {hasFilter ? (
-          <button
-            type="button"
-            className="nav-link cursor-pointer"
-            onClick={resetFilters}
-          >
-            Reset
-          </button>
-        ) : null}
       </div>
 
       {visibleUnits.length === 0 ? (
