@@ -9,6 +9,7 @@ import {
 } from "@/lib/sales";
 import type { SalesBreakdownRow, SalesPresetKey } from "@/lib/sales";
 import { MonthlyTrendChart } from "./MonthlyTrendChart";
+import { PeriodFilter } from "./period-filter";
 import { SiteNav } from "@/app/site-nav";
 
 export const metadata: Metadata = {
@@ -110,41 +111,7 @@ export default async function SalesDashboardPage({
       <main className="inventory-shell">
         <h1 className="inventory-title">Dashboard Penjualan</h1>
 
-        <form className="filter-bar" action="/sales" method="get">
-          <select
-            className="field-input filter-status"
-            name="preset"
-            aria-label="Periode"
-            defaultValue={preset}
-          >
-            {SALES_PRESETS.map((option) => (
-              <option key={option.key} value={option.key}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          {preset === "custom" ? (
-            <>
-              <input
-                className="field-input"
-                type="date"
-                name="from"
-                aria-label="Dari"
-                defaultValue={from}
-              />
-              <input
-                className="field-input"
-                type="date"
-                name="to"
-                aria-label="Sampai"
-                defaultValue={to}
-              />
-            </>
-          ) : null}
-          <button type="submit" className="login-button">
-            Terapkan
-          </button>
-        </form>
+        <PeriodFilter preset={preset} from={from} to={to} />
 
         <section className="summary-grid">
           <div className="summary-card">
@@ -153,7 +120,9 @@ export default async function SalesDashboardPage({
           </div>
           <div className="summary-card">
             <span className="summary-label">Pendapatan</span>
-            <span className="summary-value">{formatIDR(summary.revenue)}</span>
+            <span className="summary-value summary-value--money">
+              {formatIDR(summary.revenue)}
+            </span>
           </div>
           <div className="summary-card">
             <span className="summary-label">Laba Kotor</span>
