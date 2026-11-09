@@ -85,9 +85,11 @@ export async function POST(
 
   await prisma.unit.update({ where: { id: numericId }, data: parsed.data });
 
-  const url = new URL(`/units/${numericId}`, externalOrigin(request));
   if (warnings.length > 0) {
+    const url = new URL(`/units/${numericId}/edit`, externalOrigin(request));
     url.searchParams.set("warning", warnings.join(","));
+    return NextResponse.redirect(url, 303);
   }
-  return NextResponse.redirect(url, 303);
+
+  return NextResponse.redirect(new URL("/", externalOrigin(request)), 303);
 }

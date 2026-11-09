@@ -95,7 +95,7 @@ beforeEach(async () => {
 });
 
 describe("POST /api/units/[id]", () => {
-  it("updates an existing Unit's fields and redirects to its detail page", async () => {
+  it("updates an existing Unit's fields and redirects to the Inventori list", async () => {
     const unit = await seedUnit();
 
     const response = await submit(unit.id, {
@@ -107,9 +107,7 @@ describe("POST /api/units/[id]", () => {
     });
 
     expect(response.status).toBe(303);
-    expect(response.headers.get("location")).toBe(
-      `http://localhost/units/${unit.id}`,
-    );
+    expect(response.headers.get("location")).toBe("http://localhost/");
 
     const updated = await prisma.unit.findUnique({ where: { id: unit.id } });
     expect(updated?.brand).toBe("YAMAHA");
@@ -195,10 +193,31 @@ describe("POST /api/units/[id]", () => {
       chassisSerialNumber: "MH1ABC123",
     });
 
+    expect(response.headers.get("location")).toContain(
+      `/units/${unit.id}/edit`,
+    );
     expect(response.headers.get("location")).toContain("warning=chassis");
     const updated = await prisma.unit.findUnique({ where: { id: unit.id } });
     expect(updated?.chassisSerialNumber).toBe("MH1ABC123");
     expect(other.id).not.toBe(unit.id);
+  });
+
+  it("warns with both codes on a duplicate Chassis Serial Number and License Plate", async () => {
+    await seedUnit({
+      licensePlate: "B 2 BBB",
+      chassisSerialNumber: "MH1ABC123",
+    });
+    const unit = await seedUnit({ licensePlate: "B 3 CCC" });
+
+    const response = await submit(unit.id, {
+      ...REQUIRED,
+      licensePlate: "B 2 BBB",
+      chassisSerialNumber: "MH1ABC123",
+    });
+
+    const location = new URL(response.headers.get("location")!);
+    expect(location.pathname).toBe(`/units/${unit.id}/edit`);
+    expect(location.searchParams.get("warning")).toBe("chassis,license");
   });
 
   it("does not warn about its own Chassis Serial Number or License Plate", async () => {
