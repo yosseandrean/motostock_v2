@@ -46,7 +46,7 @@ describe("isSold", () => {
 
 describe("statusLabel", () => {
   it("derives In Stock from an empty Sell Price", () => {
-    expect(statusLabel(base)).toBe("Stok");
+    expect(statusLabel(base)).toBe("Tersedia");
   });
 
   it("derives Sold from a present Sell Price", () => {

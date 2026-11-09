@@ -13,6 +13,7 @@ _Avoid_: Bike, vehicle, stock item, row
 **Status**:
 Whether a Unit is currently held or has been sold. A Unit is **In Stock** until it has a Sell Price, after which it is **Sold**.
 _Avoid_: State, condition
+_UI_: Tersedia (In Stock), Terjual (Sold)
 
 **Buy Price**:
 The amount paid to acquire the motorcycle.

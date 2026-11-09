@@ -56,7 +56,7 @@ describe("InventoryList", () => {
 
     expect(html).toContain("HONDA");
     expect(html).toContain("BEAT");
-    expect(html).toContain("Stok");
+    expect(html).toContain("Tersedia");
     expect(html).toContain("10.500.000");
 
     expect(html).toContain("YAMAHA");
@@ -99,7 +99,7 @@ describe("InventoryList", () => {
 
     const firstRow = rowCells(html, 1);
     expect(firstRow[0]).toContain("status-badge status-badge--stok");
-    expect(firstRow[0]).toContain("Stok");
+    expect(firstRow[0]).toContain("Tersedia");
 
     const secondRow = rowCells(html, 2);
     expect(secondRow[0]).toContain("status-badge status-badge--terjual");
@@ -120,7 +120,7 @@ describe("InventoryList", () => {
     expect(html).toContain('type="search"');
     expect(html).toContain('aria-label="Cari unit"');
     expect(html).toContain("Semua status");
-    expect(html).toContain('<option value="stok">Stok</option>');
+    expect(html).toContain('<option value="stok">Tersedia</option>');
     expect(html).toContain('<option value="terjual">Terjual</option>');
     expect(html).not.toContain("Reset");
     expect(html).not.toContain('type="submit"');

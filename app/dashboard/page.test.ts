@@ -68,11 +68,13 @@ describe("inventory dashboard page", () => {
 
     const html = await renderPage();
 
-    expect(html).toContain("Unit Stok");
+    expect(html).toContain("Unit Tersedia");
+    expect(html).toContain("Umur Tersedia");
     expect(html).toContain("Total Modal");
     expect(html).toContain('<span class="summary-value">2</span>');
     expect(html).toContain("31.500.000");
     expect(html).not.toContain("SUZUKI");
+    expect(html).not.toContain("Stok");
   });
 
   it("renders all aging buckets and the Stale list", async () => {
