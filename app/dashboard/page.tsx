@@ -4,6 +4,7 @@ import { formatIDR } from "@/lib/format";
 import { computeDashboard } from "@/lib/dashboard";
 import type { AgingBucketKey, BreakdownRow } from "@/lib/dashboard";
 import { SiteNav } from "@/app/site-nav";
+import { UnitStaleTable } from "./unit-stale-table";
 
 export const metadata: Metadata = {
   title: "Dashboard Inventori — Motostock",
@@ -123,36 +124,7 @@ export default async function InventoryDashboardPage() {
               Tidak ada unit stale.
             </p>
           ) : (
-            <div className="table-wrap">
-              <table className="unit-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Merek</th>
-                    <th scope="col">Model</th>
-                    <th scope="col">Warna</th>
-                    <th scope="col">Plat</th>
-                    <th scope="col">Umur (hari)</th>
-                    <th scope="col">Invested</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dashboard.staleUnits.map((stale) => (
-                    <tr key={stale.id}>
-                      <td>
-                        <a className="unit-link" href={`/units/${stale.id}`}>
-                          {stale.brand}
-                        </a>
-                      </td>
-                      <td>{stale.model}</td>
-                      <td>{stale.color}</td>
-                      <td>{stale.licensePlate}</td>
-                      <td>{stale.age}</td>
-                      <td>{formatIDR(stale.invested)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <UnitStaleTable units={dashboard.staleUnits} />
           )}
         </section>
 

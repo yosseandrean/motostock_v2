@@ -98,7 +98,12 @@ describe("inventory dashboard page", () => {
     }
 
     expect(html).toContain("Unit Stale");
-    expect(html).toContain(`href="/units/${stale.id}"`);
+    // The Stale row is a clickable target, not a Merek detail-page link.
+    expect(html).toContain('role="button"');
+    expect(html).toContain('tabindex="0"');
+    expect(html).toContain('aria-label="Detail YAMAHA NMAX"');
+    expect(html).not.toContain(`href="/units/${stale.id}"`);
+    expect(html).not.toContain('class="unit-link"');
     expect(html).toContain("NMAX");
     expect(html).toContain("<td>91</td>");
     expect(html).toContain("24.000.000");

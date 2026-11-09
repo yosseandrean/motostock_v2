@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { computeChecklist } from "@/lib/checklist";
 import type { ChecklistCategoryKey } from "@/lib/checklist";
 import { SiteNav } from "@/app/site-nav";
+import { ChecklistTable } from "./checklist-table";
 
 export const metadata: Metadata = {
   title: "Data Bermasalah — Motostock",
@@ -56,32 +57,7 @@ export default async function ChecklistPage() {
                 {CATEGORY_LABELS[category.key]}{" "}
                 <span className="checklist-count">{category.items.length}</span>
               </h2>
-              <div className="table-wrap">
-                <table className="unit-table">
-                  <thead>
-                    <tr>
-                      <th scope="col">Merek</th>
-                      <th scope="col">Model</th>
-                      <th scope="col">Plat</th>
-                      <th scope="col">Keterangan</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {category.items.map((item) => (
-                      <tr key={item.id}>
-                        <td>
-                          <a className="unit-link" href={`/units/${item.id}`}>
-                            {item.brand}
-                          </a>
-                        </td>
-                        <td>{item.model}</td>
-                        <td>{item.licensePlate}</td>
-                        <td>{item.detail === "" ? "—" : item.detail}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <ChecklistTable items={category.items} />
             </section>
           ))
         )}

@@ -10,6 +10,7 @@ import {
 import type { SalesBreakdownRow, SalesPresetKey } from "@/lib/sales";
 import { MonthlyTrendChart } from "./MonthlyTrendChart";
 import { PeriodFilter } from "./period-filter";
+import { LossTable } from "./loss-table";
 import { SiteNav } from "@/app/site-nav";
 
 export const metadata: Metadata = {
@@ -180,36 +181,7 @@ export default async function SalesDashboardPage({
               Tidak ada penjualan rugi.
             </p>
           ) : (
-            <div className="table-wrap">
-              <table className="unit-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Merek</th>
-                    <th scope="col">Model</th>
-                    <th scope="col">Harga Jual</th>
-                    <th scope="col">Laba Kotor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {summary.losses.map((loss) => (
-                    <tr key={loss.id}>
-                      <td>
-                        <a className="unit-link" href={`/units/${loss.id}`}>
-                          {loss.brand}
-                        </a>
-                      </td>
-                      <td>{loss.model}</td>
-                      <td>{formatIDR(loss.sellPrice)}</td>
-                      <td>
-                        <span className="loss-value">
-                          {formatIDR(loss.grossProfit)}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <LossTable losses={summary.losses} />
           )}
         </section>
       </main>

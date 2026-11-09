@@ -67,7 +67,7 @@ describe("sales dashboard page", () => {
     expect(html).toContain("19,2%");
   });
 
-  it("surfaces loss-making sales with links to the Unit", async () => {
+  it("surfaces loss-making sales with clickable Unit rows", async () => {
     const loss = await seedUnit({
       brand: "HONDA",
       model: "SCOOPY PRESTIGE",
@@ -80,7 +80,11 @@ describe("sales dashboard page", () => {
 
     expect(html).toContain("Penjualan Rugi");
     expect(html).toContain("SCOOPY PRESTIGE");
-    expect(html).toContain(`href="/units/${loss.id}"`);
+    // The loss row is a clickable target, not a Merek detail-page link.
+    expect(html).toContain('role="button"');
+    expect(html).toContain('tabindex="0"');
+    expect(html).not.toContain(`href="/units/${loss.id}"`);
+    expect(html).not.toContain('class="unit-link"');
     expect(html.replace(/\u00a0/g, " ")).toContain("-Rp 3.350.000");
   });
 

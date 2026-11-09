@@ -61,7 +61,7 @@ describe("checklist page", () => {
     expect(html).toContain("Tidak ada masalah data.");
   });
 
-  it("surfaces every anomaly category with links to affected Units", async () => {
+  it("surfaces every anomaly category with clickable Unit rows", async () => {
     const emptyChassis = await seedUnit({ chassisSerialNumber: null, licensePlate: "B 2 BBB" });
     const duplicateChassisA = await seedUnit({ chassisSerialNumber: "MH1DUP", licensePlate: "B 3 CCC" });
     const duplicateChassisB = await seedUnit({ chassisSerialNumber: "MH1DUP", licensePlate: "B 4 DDD" });
@@ -85,7 +85,9 @@ describe("checklist page", () => {
       expect(html).toContain(label);
     }
 
-    // Each affected Unit links to its detail page.
+    // Each affected Unit row is a clickable target, not a detail-page link.
+    expect(html).toContain('role="button"');
+    expect(html).toContain('tabindex="0"');
     for (const unit of [
       emptyChassis,
       duplicateChassisA,
@@ -97,8 +99,9 @@ describe("checklist page", () => {
       splitLower,
       splitUpper,
     ]) {
-      expect(html).toContain(`href="/units/${unit.id}"`);
+      expect(html).not.toContain(`href="/units/${unit.id}"`);
     }
+    expect(html).not.toContain('class="unit-link"');
 
     // Category-specific details are visible.
     expect(html).toContain("MH1DUP");
