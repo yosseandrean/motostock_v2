@@ -99,6 +99,18 @@
     outline-offset: -1px;
   }
 
+  .field-input[aria-invalid="true"] {
+    @apply border-red-500/70 bg-red-500/5;
+  }
+
+  .field-input[aria-invalid="true"]:focus {
+    outline-color: var(--color-red-500);
+  }
+
+  .field-input:disabled {
+    @apply cursor-not-allowed opacity-60;
+  }
+
   .login-button {
     @apply cursor-pointer rounded-lg bg-amber-500 px-3 py-2.5 text-base font-semibold text-grafit-950 transition-colors hover:bg-amber-400;
   }
