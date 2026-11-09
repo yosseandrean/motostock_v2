@@ -34,8 +34,24 @@ function render(units: InventoryUnit[]): string {
   return renderToString(createElement(InventoryList, { units }));
 }
 
+function headerTexts(html: string): string[] {
+  const thead = html.match(/<thead>([\s\S]*?)<\/thead>/)?.[1] ?? "";
+  return [...thead.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map(
+    (match) => match[1],
+  );
+}
+
+function rowCells(html: string, rowIndex = 1): string[] {
+  const tbody = html.match(/<tbody>([\s\S]*?)<\/tbody>/)?.[1] ?? "";
+  const rows = [...tbody.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)];
+  const row = rows[rowIndex - 1]?.[1] ?? "";
+  return [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(
+    (match) => match[1],
+  );
+}
+
 describe("InventoryList", () => {
-  it("renders the passed Units with derived Status, Invested and Gross Profit", () => {
+  it("renders the passed Units with derived Status, Modal and Laba Kotor", () => {
     const html = render([inStock, sold]);
 
     expect(html).toContain("HONDA");
@@ -53,6 +69,41 @@ describe("InventoryList", () => {
     expect(html).toContain('tabindex="0"');
     expect(html).not.toContain('href="/units/1"');
     expect(html).not.toContain('href="/units/2"');
+  });
+
+  it("orders columns Status-first and labels Invested/Gross Profit as Modal/Laba Kotor", () => {
+    const html = render([inStock]);
+
+    expect(headerTexts(html)).toEqual([
+      "Status",
+      "Merek",
+      "Model",
+      "Tahun",
+      "Plat",
+      "Modal",
+      "Harga Jual",
+      "Laba Kotor",
+      "Tanggal Beli",
+      "Tanggal Jual",
+      "Sales Person",
+    ]);
+    expect(headerTexts(html)).not.toContain("Harga Beli");
+  });
+
+  it("keeps the Status badge first and shows the Modal hover/focus breakdown", () => {
+    const html = render([inStock, sold]);
+
+    expect(html).toMatch(
+      /title="Harga Beli Rp\u00a010\.000\.000 · Biaya Rp\u00a0500\.000"/,
+    );
+
+    const firstRow = rowCells(html, 1);
+    expect(firstRow[0]).toContain("status-badge status-badge--stok");
+    expect(firstRow[0]).toContain("Stok");
+
+    const secondRow = rowCells(html, 2);
+    expect(secondRow[0]).toContain("status-badge status-badge--terjual");
+    expect(secondRow[0]).toContain("Terjual");
   });
 
   it("shows a Tambah Unit link and omits the Cari submit", () => {

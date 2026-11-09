@@ -213,11 +213,11 @@
   }
 
   .status-badge--stok {
-    @apply bg-grafit-700 text-grafit-100;
+    @apply bg-green-500/15 text-green-400;
   }
 
   .status-badge--terjual {
-    @apply bg-amber-500/15 text-amber-400;
+    @apply bg-grafit-700 text-grafit-100;
   }
 
   /* ---- Dashboard / summary ---- */
