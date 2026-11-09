@@ -92,15 +92,28 @@ describe("new unit page", () => {
     }
   });
 
-  it("offers Brand, Color and Sales Person catalogs and Bought From suggestions", async () => {
+  it("renders Brand, Model, Color and Sales Person as free-text inputs with historical suggestions", async () => {
     await seedUnit({ brand: "HONDA", model: "BEAT", color: "MERAH", salesPerson: "HASAN", boughtFrom: "JBA TIPAR" });
     await seedUnit({ brand: "HONDA", model: "PCX 160", color: "HITAM", salesPerson: "BUDI", boughtFrom: "OTOLINK", licensePlate: "B 2 BBB" });
     await seedUnit({ brand: "YAMAHA", model: "NMAX", color: "MERAH", salesPerson: "HASAN", boughtFrom: "JBA TIPAR", licensePlate: "B 3 CCC" });
 
     const html = await renderPage();
 
+    expect(html).toContain('name="brand"');
+    expect(html).toContain('name="model"');
+    expect(html).toContain('name="color"');
+    expect(html).toContain('name="salesPerson"');
+    expect(html).toContain('list="brand-options"');
+    expect(html).toContain('list="model-options"');
+    expect(html).toContain('list="color-options"');
+    expect(html).toContain('list="sales-person-options"');
+    expect(html).not.toContain("<select");
+
     expect(html).toContain('<option value="HONDA">HONDA</option>');
     expect(html).toContain('<option value="YAMAHA">YAMAHA</option>');
+    expect(html).toContain('<option value="BEAT">BEAT</option>');
+    expect(html).toContain('<option value="PCX 160">PCX 160</option>');
+    expect(html).toContain('<option value="NMAX">NMAX</option>');
     expect(html).toContain('<option value="MERAH">MERAH</option>');
     expect(html).toContain('<option value="HITAM">HITAM</option>');
     expect(html).toContain('<option value="HASAN">HASAN</option>');
@@ -109,19 +122,16 @@ describe("new unit page", () => {
     expect(html).toContain('<option value="OTOLINK">');
   });
 
-  it("filters Model options by the selected Brand", async () => {
+  it("lists every historical Model suggestion regardless of the selected Brand", async () => {
     await seedUnit({ brand: "HONDA", model: "BEAT" });
-    await seedUnit({ brand: "HONDA", model: "PCX 160", licensePlate: "B 2 BBB" });
-    await seedUnit({ brand: "YAMAHA", model: "NMAX", licensePlate: "B 3 CCC" });
+    await seedUnit({ brand: "YAMAHA", model: "NMAX", licensePlate: "B 2 BBB" });
 
     const html = await renderPage({
-      values: JSON.stringify({ brand: "HONDA", model: "BEAT" }),
+      values: JSON.stringify({ brand: "HONDA" }),
     });
 
-    expect(html).toContain('data-brand="HONDA"');
-    expect(html).toContain('value="BEAT"');
-    expect(html).toContain('value="PCX 160"');
-    expect(html).not.toContain("NMAX");
+    expect(html).toContain('<option value="BEAT">BEAT</option>');
+    expect(html).toContain('<option value="NMAX">NMAX</option>');
   });
 
   it("shows field errors passed in the URL", async () => {
