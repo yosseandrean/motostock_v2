@@ -153,6 +153,27 @@ describe("POST /api/units/[id]", () => {
     expect(updated?.salesPerson).toBe("BUDI");
   });
 
+  it("accepts and saves free-text Brand, Model, Color and Sales Person values not in any suggestion list", async () => {
+    const unit = await seedUnit();
+
+    const response = await submit(unit.id, {
+      ...REQUIRED,
+      brand: "kawasaki",
+      model: "ninja zx-25r",
+      color: " hijau metalik ",
+      salesPerson: " citra ",
+    });
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toBe("http://localhost/");
+
+    const updated = await prisma.unit.findUnique({ where: { id: unit.id } });
+    expect(updated?.brand).toBe("KAWASAKI");
+    expect(updated?.model).toBe("NINJA ZX-25R");
+    expect(updated?.color).toBe("HIJAU METALIK");
+    expect(updated?.salesPerson).toBe("CITRA");
+  });
+
   it("redirects back to the edit page with errors and leaves the Unit unchanged", async () => {
     const unit = await seedUnit();
 

@@ -213,6 +213,25 @@ describe("POST /api/units", () => {
     expect(unit?.salesPerson).toBe("HASAN");
   });
 
+  it("accepts and saves free-text Brand, Model, Color and Sales Person values not in any suggestion list", async () => {
+    const response = await submit({
+      ...REQUIRED,
+      brand: "kawasaki",
+      model: "ninja zx-25r",
+      color: " hijau metalik ",
+      salesPerson: " citra ",
+    });
+
+    expect(response.status).toBe(303);
+    expect(response.headers.get("location")).toMatch(/\/units\/\d+\/edit$/);
+
+    const unit = await prisma.unit.findFirst();
+    expect(unit?.brand).toBe("KAWASAKI");
+    expect(unit?.model).toBe("NINJA ZX-25R");
+    expect(unit?.color).toBe("HIJAU METALIK");
+    expect(unit?.salesPerson).toBe("CITRA");
+  });
+
   it("redirects unauthenticated posts to the login page and creates nothing", async () => {
     const response = await submit(REQUIRED, false);
 

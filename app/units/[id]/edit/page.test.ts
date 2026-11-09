@@ -61,6 +61,27 @@ beforeEach(async () => {
 });
 
 describe("edit unit page", () => {
+  it("renders Brand, Model, Color and Sales Person as free-text inputs with historical suggestions", async () => {
+    const unit = await seedUnit();
+    await seedUnit({ brand: "YAMAHA", model: "NMAX", color: "HITAM", salesPerson: "BUDI", licensePlate: "B 8 DDD" });
+
+    const html = await renderPage(unit.id);
+
+    expect(html).toContain('list="brand-options"');
+    expect(html).toContain('list="model-options"');
+    expect(html).toContain('list="color-options"');
+    expect(html).toContain('list="sales-person-options"');
+    expect(html).not.toContain("<select");
+    expect(html).toContain('<option value="HONDA">HONDA</option>');
+    expect(html).toContain('<option value="PCX 160">PCX 160</option>');
+    expect(html).toContain('<option value="MERAH">MERAH</option>');
+    expect(html).toContain('<option value="ANNA">ANNA</option>');
+    expect(html).toContain('<option value="YAMAHA">YAMAHA</option>');
+    expect(html).toContain('<option value="NMAX">NMAX</option>');
+    expect(html).toContain('<option value="HITAM">HITAM</option>');
+    expect(html).toContain('<option value="BUDI">BUDI</option>');
+  });
+
   it("pre-fills the form with the unit's current values", async () => {
     const unit = await seedUnit();
     const html = await renderPage(unit.id);

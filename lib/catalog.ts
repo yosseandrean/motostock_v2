@@ -1,7 +1,5 @@
 import { prisma } from "@/lib/prisma";
 
-export type BrandModel = { brand: string; model: string };
-
 /** Distinct, sorted Brand values from existing Units. */
 export async function listBrands(): Promise<string[]> {
   const units = await prisma.unit.findMany({
@@ -11,22 +9,15 @@ export async function listBrands(): Promise<string[]> {
   return [...new Set(units.map((unit) => unit.brand))];
 }
 
-/** Distinct (Brand, Model) pairs from existing Units, sorted. */
-export async function listModels(): Promise<BrandModel[]> {
+/** Distinct, sorted Model values from existing Units. */
+export async function listModels(): Promise<string[]> {
   const units = await prisma.unit.findMany({
-    select: { brand: true, model: true },
-    orderBy: [{ brand: "asc" }, { model: "asc" }],
+    select: { model: true },
+    orderBy: { model: "asc" },
   });
-  const seen = new Set<string>();
-  const result: BrandModel[] = [];
-  for (const unit of units) {
-    const key = `${unit.brand}\u0000${unit.model}`;
-    if (!seen.has(key)) {
-      seen.add(key);
-      result.push({ brand: unit.brand, model: unit.model });
-    }
-  }
-  return result;
+  return [
+    ...new Set(units.map((unit) => unit.model).filter((model) => model !== "")),
+  ];
 }
 
 /** Distinct, sorted, non-empty Color values from existing Units. */

@@ -1,6 +1,3 @@
-import { BrandModelFields } from "./new/BrandModelFields";
-import type { BrandModel } from "@/lib/catalog";
-
 export type FormFieldMap = Record<string, string>;
 
 export type UnitFormProps = {
@@ -8,7 +5,7 @@ export type UnitFormProps = {
   values: FormFieldMap;
   errors: FormFieldMap;
   brands: string[];
-  models: BrandModel[];
+  models: string[];
   colors: string[];
   salesPersons: string[];
   boughtFroms: string[];
@@ -59,14 +56,57 @@ export function UnitForm({
   return (
     <form action={action} method="post" className="unit-form">
       <div className="form-grid">
-        <BrandModelFields
-          brands={brands}
-          models={models}
-          initialBrand={values.brand ?? ""}
-          initialModel={values.model ?? ""}
-          brandError={errorFor(errors, "brand")}
-          modelError={errorFor(errors, "model")}
+        <label className="field-label" htmlFor="brand">
+          Merek
+        </label>
+        <input
+          id="brand"
+          name="brand"
+          type="text"
+          className="field-input"
+          list="brand-options"
+          defaultValue={values.brand ?? ""}
+          required
+          aria-invalid={errorFor(errors, "brand") ? true : undefined}
         />
+        <datalist id="brand-options">
+          {brands.map((entry) => (
+            <option key={entry} value={entry}>
+              {entry}
+            </option>
+          ))}
+        </datalist>
+        {errorFor(errors, "brand") ? (
+          <p className="field-error" role="alert">
+            {errorFor(errors, "brand")}
+          </p>
+        ) : null}
+
+        <label className="field-label" htmlFor="model">
+          Model
+        </label>
+        <input
+          id="model"
+          name="model"
+          type="text"
+          className="field-input"
+          list="model-options"
+          defaultValue={values.model ?? ""}
+          required
+          aria-invalid={errorFor(errors, "model") ? true : undefined}
+        />
+        <datalist id="model-options">
+          {models.map((entry) => (
+            <option key={entry} value={entry}>
+              {entry}
+            </option>
+          ))}
+        </datalist>
+        {errorFor(errors, "model") ? (
+          <p className="field-error" role="alert">
+            {errorFor(errors, "model")}
+          </p>
+        ) : null}
 
         <label className="field-label" htmlFor="modelYear">
           Tahun
@@ -108,19 +148,21 @@ export function UnitForm({
         <label className="field-label" htmlFor="color">
           Warna
         </label>
-        <select
+        <input
           id="color"
           name="color"
+          type="text"
           className="field-input"
+          list="color-options"
           defaultValue={values.color ?? ""}
-        >
-          <option value="">—</option>
+        />
+        <datalist id="color-options">
           {colors.map((entry) => (
             <option key={entry} value={entry}>
               {entry}
             </option>
           ))}
-        </select>
+        </datalist>
 
         <label className="field-label" htmlFor="buyPrice">
           Harga Beli
@@ -215,19 +257,21 @@ export function UnitForm({
         <label className="field-label" htmlFor="salesPerson">
           Sales Person
         </label>
-        <select
+        <input
           id="salesPerson"
           name="salesPerson"
+          type="text"
           className="field-input"
+          list="sales-person-options"
           defaultValue={values.salesPerson ?? ""}
-        >
-          <option value="">—</option>
+        />
+        <datalist id="sales-person-options">
           {salesPersons.map((entry) => (
             <option key={entry} value={entry}>
               {entry}
             </option>
           ))}
-        </select>
+        </datalist>
 
         <label className="field-label" htmlFor="nameOnRegistration">
           Nama di STNK
