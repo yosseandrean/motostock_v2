@@ -84,6 +84,14 @@ describe("GET /api/export", () => {
     expect(lines).toHaveLength(2);
   });
 
+  it("names the export inventory-<YYYY-MM-DD>.csv", async () => {
+    const response = await GET(await exportRequest(true));
+
+    expect(response.headers.get("content-disposition")).toMatch(
+      /^attachment; filename="inventory-\d{4}-\d{2}-\d{2}\.csv"$/,
+    );
+  });
+
   it("round-trips: exporting then re-importing changes nothing", async () => {
     await importCsv(fullCsv());
 
