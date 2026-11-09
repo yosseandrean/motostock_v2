@@ -82,6 +82,43 @@ describe("edit unit page", () => {
     expect(html).toContain('<option value="BUDI">BUDI</option>');
   });
 
+  it("renders the sell-related fields last, after the acquisition, registration and notes fields", async () => {
+    const unit = await seedUnit();
+    const html = await renderPage(unit.id);
+
+    const nonSellLabels = [
+      "Merek",
+      "Model",
+      "Tahun",
+      "Plat",
+      "Warna",
+      "Harga Beli",
+      "Biaya",
+      "Tanggal Beli",
+      "Nama di STNK",
+      "Nomor Rangka",
+      "Nomor Mesin",
+      "Dibeli Dari",
+      "Catatan",
+    ];
+    const nonSellPositions = nonSellLabels.map((label) => html.indexOf(label));
+    const sellPositions = ["Harga Jual", "Tanggal Jual", "Sales Person"].map(
+      (label) => html.indexOf(label),
+    );
+
+    for (const position of [...nonSellPositions, ...sellPositions]) {
+      expect(position).toBeGreaterThan(-1);
+    }
+
+    const lastNonSell = Math.max(...nonSellPositions);
+    for (const position of sellPositions) {
+      expect(position).toBeGreaterThan(lastNonSell);
+    }
+
+    expect(sellPositions[0]).toBeLessThan(sellPositions[1]);
+    expect(sellPositions[1]).toBeLessThan(sellPositions[2]);
+  });
+
   it("pre-fills the form with the unit's current values", async () => {
     const unit = await seedUnit();
     const html = await renderPage(unit.id);
