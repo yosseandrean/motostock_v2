@@ -1,4 +1,5 @@
 import { collapseWhitespace, normalizeUpperCase } from "@/lib/inventory-csv";
+import { parseDateOnly, parseOptionalInt } from "@/lib/unit-form-parse";
 import { WIB_OFFSET_MS } from "@/lib/sales";
 
 /** The three raw string values submitted by the sell form. */
@@ -21,9 +22,6 @@ export type SellFormResult =
   | { ok: true; data: SellFormData }
   | { ok: false; errors: SellFormErrors };
 
-const INTEGER_RE = /^\d+$/;
-const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
-
 /** Read the three raw string fields out of a submitted FormData. */
 export function readSellForm(formData: FormData): SellFormValues {
   return {
@@ -41,13 +39,14 @@ export function parseSellForm(values: SellFormValues): SellFormResult {
   const errors: SellFormErrors = {};
 
   const sellPriceRaw = collapseWhitespace(values.sellPrice);
+  const sellPriceParsed = parseOptionalInt(sellPriceRaw);
   let sellPrice: number | null = null;
   if (sellPriceRaw === "") {
     errors.sellPrice = "Harga Jual wajib diisi";
-  } else if (!INTEGER_RE.test(sellPriceRaw)) {
+  } else if (sellPriceParsed === "invalid") {
     errors.sellPrice = "Harga Jual harus angka";
   } else {
-    sellPrice = Number(sellPriceRaw);
+    sellPrice = sellPriceParsed as number;
   }
 
   const dateSoldRaw = collapseWhitespace(values.dateSold);
@@ -55,23 +54,11 @@ export function parseSellForm(values: SellFormValues): SellFormResult {
   if (dateSoldRaw === "") {
     errors.dateSold = "Tanggal Jual wajib diisi";
   } else {
-    const match = DATE_RE.exec(dateSoldRaw);
-    if (!match) {
+    const parsed = parseDateOnly(dateSoldRaw);
+    if (parsed === "invalid") {
       errors.dateSold = "Tanggal Jual tidak valid";
     } else {
-      const year = Number(match[1]);
-      const month = Number(match[2]);
-      const day = Number(match[3]);
-      const date = new Date(Date.UTC(year, month - 1, day));
-      if (
-        date.getUTCFullYear() !== year ||
-        date.getUTCMonth() !== month - 1 ||
-        date.getUTCDate() !== day
-      ) {
-        errors.dateSold = "Tanggal Jual tidak valid";
-      } else {
-        dateSold = date;
-      }
+      dateSold = parsed;
     }
   }
 

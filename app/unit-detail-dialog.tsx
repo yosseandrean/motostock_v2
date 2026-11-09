@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { formatIDR } from "@/lib/format";
 
 /** A Unit as returned by GET /api/units/[id]. Dates arrive as ISO strings. */
-export type UnitDetail = {
+type UnitDetail = {
   id: number;
   brand: string;
   model: string;
@@ -32,7 +32,7 @@ function formatDate(value: string | null): string {
  * The loaded detail view: every Unit field plus the Ubah link and, for an
  * In Stock Unit, the Jual link to the sell form.
  */
-export function UnitDetailView({
+function UnitDetailView({
   unit,
   unitId,
 }: {

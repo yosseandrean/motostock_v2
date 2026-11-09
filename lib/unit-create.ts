@@ -1,4 +1,5 @@
 import { collapseWhitespace, normalizeUpperCase } from "@/lib/inventory-csv";
+import { parseDateOnly, parseOptionalInt } from "@/lib/unit-form-parse";
 
 /** The 16 raw string values submitted by the create/edit Unit form. */
 export type UnitFormValues = {
@@ -69,40 +70,7 @@ export function readUnitForm(formData: FormData): UnitFormValues {
   };
 }
 
-const INTEGER_RE = /^\d+$/;
-const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
 const MODEL_YEAR_RE = /^\d{4}$/;
-
-/** Parse `YYYY-MM-DD` as a UTC-midnight Date, or null for empty, or "invalid". */
-function parseDateOnly(value: string): Date | null | "invalid" {
-  if (value === "") {
-    return null;
-  }
-  const match = DATE_RE.exec(value);
-  if (!match) {
-    return "invalid";
-  }
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  if (
-    date.getUTCFullYear() !== year ||
-    date.getUTCMonth() !== month - 1 ||
-    date.getUTCDate() !== day
-  ) {
-    return "invalid";
-  }
-  return date;
-}
-
-/** Parse a whole-IDR integer, or null for empty, or "invalid". */
-function parseOptionalInt(value: string): number | null | "invalid" {
-  if (value === "") {
-    return null;
-  }
-  return INTEGER_RE.test(value) ? Number(value) : "invalid";
-}
 
 /** Collapse whitespace and map an empty string to null (free text). */
 function optionalText(value: string): string | null {
@@ -155,13 +123,14 @@ export function parseUnitForm(values: UnitFormValues): UnitFormResult {
   }
 
   const buyPriceRaw = collapseWhitespace(values.buyPrice);
+  const buyPriceParsed = parseOptionalInt(buyPriceRaw);
   let buyPrice: number | null = null;
   if (buyPriceRaw === "") {
     errors.buyPrice = "Harga Beli wajib diisi";
-  } else if (!INTEGER_RE.test(buyPriceRaw)) {
+  } else if (buyPriceParsed === "invalid") {
     errors.buyPrice = "Harga Beli harus angka";
   } else {
-    buyPrice = Number(buyPriceRaw);
+    buyPrice = buyPriceParsed as number;
   }
 
   const costParsed = parseOptionalInt(collapseWhitespace(values.cost));
