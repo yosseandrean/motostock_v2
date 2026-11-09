@@ -16,12 +16,13 @@
 - [x] 2026-11-09 — Rename "Invested" to "Modal". (resolved 2026-11-09)
 - [x] 2026-11-09 — Rather than showing "Harga beli" in Inventori, better to show "Modal". (resolved 2026-11-09)
 - [x] 2026-11-09 — When the cursor hovers over "Modal", it should show its harga beli and biaya. (resolved 2026-11-09)
-- [ ] 2026-11-09 — remove the reset button when filtering inventory
-- [ ] 2026-11-09 — The app uses the word Stok to indicate when the unit status is "in Stock". This is a linguistic error. A more fitting word is "Tersedia" in Indonesia.
-- [ ] 2026-11-09 — Right now the inventori table is using only the middle slice of the screen. The user needs to scroll right to see the rest of the fields. eventhough the screen has more width that can be used
-- [ ] 2026-11-09 — we need to make the sell event more intuitive. Instead of having to go to Edit form, there should be a sell (Jual) button where the user would just input sell-related fields.
-- [ ] 2026-11-09 — In Tambah Unit form, Merek, model, warna, sales person should be text input. When the user type in there should be a recommendation based on historical input. We should not limit the user to only choose on the option available in the drop down.
-- [ ] 2026-11-09 — The ordering of field in Tambah unit form is not intuitive. Sell related fields should be put last because chances are when the unit is entered in, the unit is just bought and has not been sold yet.
-- [ ] 2026-11-09 — In the sell form, if any, the date sold should default to today
-- [ ] 2026-11-09 — need a better menu name. Inventori, dashboard, penjualan is confusing. Dashboard refers to inventori dashboard, penjualan is a dashboard for sales, this is confusing.
-- [ ] 2026-11-09 — In the tren chart, put a label on the y-axis label. Since Laba kotor is mentioned first, put it on the left.
+- [x] 2026-11-09 — remove the reset button when filtering inventory (resolved 2026-11-09)
+- [x] 2026-11-09 — The app uses the word Stok to indicate when the unit status is "in Stock". This is a linguistic error. A more fitting word is "Tersedia" in Indonesia. (resolved 2026-11-09)
+- [x] 2026-11-09 — Right now the inventori table is using only the middle slice of the screen. The user needs to scroll right to see the rest of the fields. eventhough the screen has more width that can be used (resolved 2026-11-09)
+- [x] 2026-11-09 — we need to make the sell event more intuitive. Instead of having to go to Edit form, there should be a sell (Jual) button where the user would just input sell-related fields. (resolved 2026-11-09)
+- [x] 2026-11-09 — In Tambah Unit form, Merek, model, warna, sales person should be text input. When the user type in there should be a recommendation based on historical input. We should not limit the user to only choose on the option available in the drop down. (resolved 2026-11-09)
+- [x] 2026-11-09 — The ordering of field in Tambah unit form is not intuitive. Sell related fields should be put last because chances are when the unit is entered in, the unit is just bought and has not been sold yet. (resolved 2026-11-09)
+- [x] 2026-11-09 — In the sell form, if any, the date sold should default to today (resolved 2026-11-09)
+- [x] 2026-11-09 — need a better menu name. Inventori, dashboard, penjualan is confusing. Dashboard refers to inventori dashboard, penjualan is a dashboard for sales, this is confusing. (resolved 2026-11-09)
+- [x] 2026-11-09 — In the tren chart, put a label on the y-axis label. Since Laba kotor is mentioned first, put it on the left. (resolved 2026-11-09)
+- [x] 2026-11-09 — ekspor csv should produce a file with date appended to it (resolved 2026-11-09)
