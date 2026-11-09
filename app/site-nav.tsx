@@ -14,8 +14,8 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Inventori", key: "inventori" },
-  { href: "/dashboard", label: "Dashboard", key: "dashboard" },
-  { href: "/sales", label: "Penjualan", key: "penjualan" },
+  { href: "/dashboard", label: "Dashboard Inventori", key: "dashboard" },
+  { href: "/sales", label: "Dashboard Penjualan", key: "penjualan" },
   { href: "/checklist", label: "Data Bermasalah", key: "ceklis" },
   { href: "/import", label: "Impor CSV", key: "import" },
   { href: "/api/export", label: "Ekspor CSV", key: "ekspor" },
