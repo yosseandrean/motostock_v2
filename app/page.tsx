@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { formatIDR } from "@/lib/format";
-import { filterUnits, grossProfit, invested, statusLabel } from "@/lib/unit";
+import {
+  filterUnits,
+  grossProfit,
+  invested,
+  isSold,
+  statusLabel,
+} from "@/lib/unit";
 import type { UnitStatus } from "@/lib/unit";
 import { SiteNav } from "@/app/site-nav";
 
@@ -30,6 +36,14 @@ const HEADERS = [
   "Invested",
   "Gross Profit",
 ] as const;
+
+const NUMERIC_HEADERS = new Set([
+  "Tahun",
+  "Harga Beli",
+  "Harga Jual",
+  "Invested",
+  "Gross Profit",
+]);
 
 function parseStatus(value: string | undefined): UnitStatus | undefined {
   return value === "stok" || value === "terjual" ? value : undefined;
@@ -95,7 +109,11 @@ export default async function InventoryPage({
               <thead>
                 <tr>
                   {HEADERS.map((header) => (
-                    <th key={header} scope="col">
+                    <th
+                      key={header}
+                      scope="col"
+                      className={NUMERIC_HEADERS.has(header) ? "num" : undefined}
+                    >
                       {header}
                     </th>
                   ))}
@@ -112,11 +130,21 @@ export default async function InventoryPage({
                         </a>
                       </td>
                       <td>{unit.model}</td>
-                      <td>{unit.modelYear}</td>
+                      <td className="num">{unit.modelYear}</td>
                       <td>{unit.licensePlate}</td>
-                      <td>{statusLabel(unit)}</td>
-                      <td>{formatIDR(unit.buyPrice)}</td>
                       <td>
+                        <span
+                          className={
+                            isSold(unit)
+                              ? "status-badge status-badge--terjual"
+                              : "status-badge status-badge--stok"
+                          }
+                        >
+                          {statusLabel(unit)}
+                        </span>
+                      </td>
+                      <td className="num">{formatIDR(unit.buyPrice)}</td>
+                      <td className="num">
                         {unit.sellPrice === null
                           ? "—"
                           : formatIDR(unit.sellPrice)}
@@ -128,8 +156,10 @@ export default async function InventoryPage({
                           : unit.dateSold.toLocaleDateString("id-ID")}
                       </td>
                       <td>{unit.salesPerson ?? "—"}</td>
-                      <td>{formatIDR(invested(unit))}</td>
-                      <td>{profit === null ? "—" : formatIDR(profit)}</td>
+                      <td className="num">{formatIDR(invested(unit))}</td>
+                      <td className="num">
+                        {profit === null ? "—" : formatIDR(profit)}
+                      </td>
                     </tr>
                   );
                 })}

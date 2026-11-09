@@ -152,6 +152,18 @@
     border-bottom: none;
   }
 
+  .unit-table .num {
+    @apply text-right tabular-nums;
+  }
+
+  .unit-table tbody tr {
+    transition: background-color 150ms ease;
+  }
+
+  .unit-table tbody tr:hover {
+    background-color: color-mix(in oklab, var(--color-grafit-800) 55%, transparent);
+  }
+
   .detail-table th[scope="row"] {
     @apply w-px whitespace-nowrap font-semibold text-grafit-400;
   }
@@ -172,6 +184,20 @@
 
   .unit-link {
     @apply font-semibold text-amber-400 no-underline;
+  }
+
+  /* ---- Status badges ---- */
+
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+
+  .status-badge--stok {
+    @apply bg-grafit-700 text-grafit-100;
+  }
+
+  .status-badge--terjual {
+    @apply bg-amber-500/15 text-amber-400;
   }
 
   /* ---- Dashboard / summary ---- */
