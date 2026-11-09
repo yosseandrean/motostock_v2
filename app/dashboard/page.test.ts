@@ -51,7 +51,7 @@ beforeEach(async () => {
 });
 
 describe("inventory dashboard page", () => {
-  it("shows In Stock count and total Invested, ignoring Sold Units", async () => {
+  it("shows In Stock count and total Modal, ignoring Sold Units", async () => {
     await seedUnit({ buyPrice: 10_000_000, cost: 500_000 });
     await seedUnit({
       brand: "YAMAHA",
@@ -69,7 +69,7 @@ describe("inventory dashboard page", () => {
     const html = await renderPage();
 
     expect(html).toContain("Unit Stok");
-    expect(html).toContain("Total Invested");
+    expect(html).toContain("Total Modal");
     expect(html).toContain('<span class="summary-value">2</span>');
     expect(html).toContain("31.500.000");
     expect(html).not.toContain("SUZUKI");
@@ -121,7 +121,7 @@ describe("inventory dashboard page", () => {
     expect(html).toContain("Per Model");
     expect(html).not.toContain("Per Warna");
 
-    // Brand Invested totals.
+    // Brand Modal totals.
     expect(html).toContain("22.500.000");
     expect(html).toContain("45.000.000");
   });

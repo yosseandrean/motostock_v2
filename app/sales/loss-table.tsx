@@ -4,6 +4,7 @@ import { useState } from "react";
 import { formatIDR } from "@/lib/format";
 import type { SalesLoss } from "@/lib/sales";
 import { UnitDetailDialog } from "@/app/unit-detail-dialog";
+import { ClickableUnitRow } from "@/app/unit-row";
 
 /**
  * The Penjualan "Penjualan Rugi" table. The server page passes the serialized
@@ -27,19 +28,10 @@ export function LossTable({ losses }: { losses: SalesLoss[] }) {
           </thead>
           <tbody>
             {losses.map((loss) => (
-              <tr
+              <ClickableUnitRow
                 key={loss.id}
-                className="unit-row"
-                role="button"
-                tabIndex={0}
-                aria-label={`Detail ${loss.brand} ${loss.model}`}
-                onClick={() => setSelectedId(loss.id)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    setSelectedId(loss.id);
-                  }
-                }}
+                unit={loss}
+                onOpen={setSelectedId}
               >
                 <td>{loss.brand}</td>
                 <td>{loss.model}</td>
@@ -49,7 +41,7 @@ export function LossTable({ losses }: { losses: SalesLoss[] }) {
                     {formatIDR(loss.grossProfit)}
                   </span>
                 </td>
-              </tr>
+              </ClickableUnitRow>
             ))}
           </tbody>
         </table>
