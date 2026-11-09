@@ -7,7 +7,7 @@ const SECTIONS: { href: string; label: string; active: SiteNavSection }[] = [
   { href: "/", label: "Inventori", active: "inventori" },
   { href: "/dashboard", label: "Dashboard", active: "dashboard" },
   { href: "/sales", label: "Penjualan", active: "penjualan" },
-  { href: "/checklist", label: "Ceklis Data", active: "ceklis" },
+  { href: "/checklist", label: "Data Bermasalah", active: "ceklis" },
   { href: "/import", label: "Impor CSV", active: "import" },
   { href: "/api/export", label: "Ekspor CSV", active: "ekspor" },
 ];

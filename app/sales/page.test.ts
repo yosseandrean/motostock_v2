@@ -143,6 +143,43 @@ describe("sales dashboard page", () => {
     expect(html).not.toContain("SUZUKI");
   });
 
+  it("auto-applies the period without a Terapkan button", async () => {
+    const html = await renderPage();
+
+    expect(html).toContain(
+      '<form class="filter-bar" action="/sales" method="get">',
+    );
+    expect(html).toContain('name="preset"');
+    expect(html).not.toContain("Terapkan");
+    expect(html).not.toContain('class="login-button"');
+  });
+
+  it("renders the current preset as the selected option", async () => {
+    const html = await renderPage({ preset: "all-time" });
+
+    expect(html).toContain(
+      '<option value="all-time" selected="">Semua waktu</option>',
+    );
+  });
+
+  it("shows custom date inputs only for the Custom preset", async () => {
+    const defaultHtml = await renderPage();
+    expect(defaultHtml).not.toContain('name="from"');
+    expect(defaultHtml).not.toContain('name="to"');
+
+    const customHtml = await renderPage({ preset: "custom" });
+    expect(customHtml).toContain('name="from"');
+    expect(customHtml).toContain('name="to"');
+  });
+
+  it("styles the Pendapatan value so long amounts fit", async () => {
+    await seedUnit();
+
+    const html = await renderPage();
+
+    expect(html).toContain('class="summary-value summary-value--money"');
+  });
+
   it("serializes the weekly trend chart data into the page", async () => {
     await seedUnit(); // buy 10,000,000 + 500,000, sell 13,000,000
 
