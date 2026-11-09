@@ -2,17 +2,26 @@
 
 > Log of user feedback for planning. `[x]` = resolved, `[ ]` = open. Manage with `/feedback`.
 
-- [ ] 2026-11-09 — The search bar to be snappier: automatically filter the inventory list without waiting for the user to hit "Cari". We can even remove the "Cari" button.
-- [ ] 2026-11-09 — The time period dropdown in Dashboard Penjualan to be snappier: no need for the user to press "Terapkan".
-- [ ] 2026-11-09 — For time period "bulan ini" and "bulan lalu", the chart is only showing one data point. If the period covers one month, the data granularity should be weekly so it does not show only one data point.
-- [ ] 2026-11-09 — We should split the laba kotor and pendapatan to different chart. They are on different scale; it is hard to see laba kotor trend when it is displayed in the same chart with pendapatan.
-- [ ] 2026-11-09 — In Dashboard Penjualan, the Pendapatan box in the header has too many digits that the number extends outside the boundary of the box.
-- [ ] 2026-11-09 — In any table, the unit can only be clickable by the Merek column. I find this not user friendly; the unit should be clickable on the entire row.
-- [ ] 2026-11-09 — When a unit is clicked it should show a floating window that shows the detail of the unit with a button to Edit which would take the user to the edit form. This would eliminate the need for the Detail Unit page.
-- [ ] 2026-11-09 — Status column should be displayed on the first. Terjual should be grey, and Stok should be green.
-- [ ] 2026-11-09 — Tambah Unit should be a button in the Inventori page, not on the header.
-- [ ] 2026-11-09 — Rename "Ceklis data" to "Data bermasalah".
-- [ ] 2026-11-09 — Status filter in Inventori also needs to be snappier.
-- [ ] 2026-11-09 — Rename "Invested" to "Modal".
-- [ ] 2026-11-09 — Rather than showing "Harga beli" in Inventori, better to show "Modal".
-- [ ] 2026-11-09 — When the cursor hovers over "Modal", it should show its harga beli and biaya.
+- [x] 2026-11-09 — The search bar to be snappier: automatically filter the inventory list without waiting for the user to hit "Cari". We can even remove the "Cari" button. (resolved 2026-11-09)
+- [x] 2026-11-09 — The time period dropdown in Dashboard Penjualan to be snappier: no need for the user to press "Terapkan". (resolved 2026-11-09)
+- [x] 2026-11-09 — For time period "bulan ini" and "bulan lalu", the chart is only showing one data point. If the period covers one month, the data granularity should be weekly so it does not show only one data point. (resolved 2026-11-09)
+- [x] 2026-11-09 — We should split the laba kotor and pendapatan to different chart. They are on different scale; it is hard to see laba kotor trend when it is displayed in the same chart with pendapatan. (resolved 2026-11-09)
+- [x] 2026-11-09 — In Dashboard Penjualan, the Pendapatan box in the header has too many digits that the number extends outside the boundary of the box. (resolved 2026-11-09)
+- [x] 2026-11-09 — In any table, the unit can only be clickable by the Merek column. I find this not user friendly; the unit should be clickable on the entire row. (resolved 2026-11-09)
+- [x] 2026-11-09 — When a unit is clicked it should show a floating window that shows the detail of the unit with a button to Edit which would take the user to the edit form. This would eliminate the need for the Detail Unit page. (resolved 2026-11-09)
+- [x] 2026-11-09 — Status column should be displayed on the first. Terjual should be grey, and Stok should be green. (resolved 2026-11-09)
+- [x] 2026-11-09 — Tambah Unit should be a button in the Inventori page, not on the header. (resolved 2026-11-09)
+- [x] 2026-11-09 — Rename "Ceklis data" to "Data bermasalah". (resolved 2026-11-09)
+- [x] 2026-11-09 — Status filter in Inventori also needs to be snappier. (resolved 2026-11-09)
+- [x] 2026-11-09 — Rename "Invested" to "Modal". (resolved 2026-11-09)
+- [x] 2026-11-09 — Rather than showing "Harga beli" in Inventori, better to show "Modal". (resolved 2026-11-09)
+- [x] 2026-11-09 — When the cursor hovers over "Modal", it should show its harga beli and biaya. (resolved 2026-11-09)
+- [ ] 2026-11-09 — remove the reset button when filtering inventory
+- [ ] 2026-11-09 — The app uses the word Stok to indicate when the unit status is "in Stock". This is a linguistic error. A more fitting word is "Tersedia" in Indonesia.
+- [ ] 2026-11-09 — Right now the inventori table is using only the middle slice of the screen. The user needs to scroll right to see the rest of the fields. eventhough the screen has more width that can be used
+- [ ] 2026-11-09 — we need to make the sell event more intuitive. Instead of having to go to Edit form, there should be a sell (Jual) button where the user would just input sell-related fields.
+- [ ] 2026-11-09 — In Tambah Unit form, Merek, model, warna, sales person should be text input. When the user type in there should be a recommendation based on historical input. We should not limit the user to only choose on the option available in the drop down.
+- [ ] 2026-11-09 — The ordering of field in Tambah unit form is not intuitive. Sell related fields should be put last because chances are when the unit is entered in, the unit is just bought and has not been sold yet.
+- [ ] 2026-11-09 — In the sell form, if any, the date sold should default to today
+- [ ] 2026-11-09 — need a better menu name. Inventori, dashboard, penjualan is confusing. Dashboard refers to inventori dashboard, penjualan is a dashboard for sales, this is confusing.
+- [ ] 2026-11-09 — In the tren chart, put a label on the y-axis label. Since Laba kotor is mentioned first, put it on the left.

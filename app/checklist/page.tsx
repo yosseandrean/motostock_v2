@@ -42,7 +42,7 @@ export default async function ChecklistPage() {
         <h1 className="inventory-title">Data Bermasalah</h1>
 
         <p className="import-hint">
-          Daftar masalah data ditemukan tanpa mengubah data apa pun. Buka unit
+          Berikut adalah daftar unit dengan data yang bermasalah. Buka unit ini
           untuk memperbaiki satu per satu.
         </p>
 
