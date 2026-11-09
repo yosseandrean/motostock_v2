@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-type SearchParams = {
+export type SearchParams = {
   imported?: string;
   skipped?: string;
   rejected?: string;
@@ -87,14 +87,16 @@ export default async function ImportPage({
               <table className="unit-table">
                 <thead>
                   <tr>
-                    <th scope="col">Baris</th>
+                    <th scope="col" className="num">
+                      Baris
+                    </th>
                     <th scope="col">Alasan</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rejections.map((rejection) => (
                     <tr key={rejection.line}>
-                      <td>{rejection.line}</td>
+                      <td className="num">{rejection.line}</td>
                       <td>{rejection.reason}</td>
                     </tr>
                   ))}
