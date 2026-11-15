@@ -12,6 +12,10 @@ Uses the five default triage labels: `needs-triage`, `needs-info`, `ready-for-ag
 
 Single-context: `GLOSSARY.md` at the repo root plus `docs/adr/`. See `docs/agents/domain.md`.
 
+### Coding standards
+
+How code and tests should be written — the testing seam, domain-language rules, and architecture pointers — lives in `CODING_STANDARDS.md`. Read it before writing tests or user-facing labels.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
