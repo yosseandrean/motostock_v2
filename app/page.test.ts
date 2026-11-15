@@ -35,7 +35,7 @@ async function renderPage(): Promise<string> {
 function headerTexts(html: string): string[] {
   const thead = html.match(/<thead>([\s\S]*?)<\/thead>/)?.[1] ?? "";
   return [...thead.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map(
-    (match) => match[1],
+    (match) => match[1]
   );
 }
 
@@ -107,6 +107,39 @@ describe("inventory list page", () => {
     expect(html).not.toContain(`href="/units/${sold.id}"`);
   });
 
+  it("renders Tanggal Beli and Tanggal Jual as deterministic WIB d/m/yyyy", async () => {
+    await seedUnit(); // dateBought 2026-01-01T12:00Z → WIB 1/1/2026
+    await seedUnit({
+      brand: "YAMAHA",
+      model: "NMAX",
+      licensePlate: "B 2 BBB",
+      buyPrice: 20_000_000,
+      cost: 1_000_000,
+      sellPrice: 25_000_000,
+      dateBought: new Date("2025-06-01T12:00:00.000Z"),
+      dateSold: new Date("2025-12-01T12:00:00.000Z"),
+      chassisSerialNumber: "MH1XYZ999",
+    });
+
+    const html = await renderPage();
+
+    expect(html).toContain("1/1/2026");
+    expect(html).toContain("1/6/2025");
+    expect(html).toContain("1/12/2025");
+  });
+
+  it("renders Date Bought in WIB when the UTC instant is the day before", async () => {
+    // 2026-01-01T18:00Z is already 2026-01-02 in WIB.
+    await seedUnit({
+      dateBought: new Date("2026-01-01T18:00:00.000Z"),
+      licensePlate: "B 9 WIB",
+    });
+
+    const html = await renderPage();
+
+    expect(html).toContain("2/1/2026");
+  });
+
   it("adds a Tambah Unit link and removes the Cari submit", async () => {
     const html = await renderPage();
 
@@ -117,7 +150,8 @@ describe("inventory list page", () => {
 
   it("renders live search and Status filters without a Reset button", async () => {
     const html = await renderPage();
-    const filterBar = html.match(/<div class="filter-bar">([\s\S]*?)<\/div>/)?.[1] ?? "";
+    const filterBar =
+      html.match(/<div class="filter-bar">([\s\S]*?)<\/div>/)?.[1] ?? "";
 
     expect(filterBar).toContain('type="search"');
     expect(filterBar).toContain('aria-label="Cari unit"');
@@ -139,7 +173,7 @@ describe("inventory list page", () => {
     const html = await renderPage();
 
     expect(html).toContain(
-      '<main class="inventory-shell inventory-shell--wide">',
+      '<main class="inventory-shell inventory-shell--wide">'
     );
     expect(html).toContain('class="table-wrap"');
   });

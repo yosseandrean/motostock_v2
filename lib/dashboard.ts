@@ -5,6 +5,7 @@
  */
 
 import { invested, isSold } from "@/lib/unit";
+import { ageInDays } from "@/lib/calendar";
 
 /** An In Stock Unit becomes Stale once its Age exceeds this many days. */
 export const STALE_THRESHOLD_DAYS = 90;
@@ -63,21 +64,6 @@ export type Dashboard = {
   byModel: BreakdownRow[];
 };
 
-/** Age in whole calendar days: the number of days since Date Bought. */
-export function ageInDays(dateBought: Date, now: Date): number {
-  const start = Date.UTC(
-    dateBought.getUTCFullYear(),
-    dateBought.getUTCMonth(),
-    dateBought.getUTCDate(),
-  );
-  const end = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-  );
-  return Math.floor((end - start) / 86_400_000);
-}
-
 /** The aging bucket an Age falls into. Buckets never overlap. */
 export function agingBucket(age: number): AgingBucketKey {
   if (age < 30) {
@@ -100,7 +86,7 @@ export function isStale(age: number): boolean {
 function accumulate(
   map: Map<string, { count: number; invested: number }>,
   key: string,
-  value: number,
+  value: number
 ): void {
   const existing = map.get(key);
   if (existing === undefined) {
@@ -112,7 +98,7 @@ function accumulate(
 }
 
 function toBreakdown(
-  map: Map<string, { count: number; invested: number }>,
+  map: Map<string, { count: number; invested: number }>
 ): BreakdownRow[] {
   return [...map.entries()]
     .map(([key, value]) => ({ key, ...value }))
@@ -128,12 +114,12 @@ function toBreakdown(
  */
 export function computeDashboard(
   units: readonly DashboardUnit[],
-  now: Date,
+  now: Date
 ): Dashboard {
   const inStock = units.filter((unit) => !isSold(unit));
 
   const buckets = new Map<AgingBucketKey, { count: number; invested: number }>(
-    AGING_BUCKET_KEYS.map((key) => [key, { count: 0, invested: 0 }]),
+    AGING_BUCKET_KEYS.map((key) => [key, { count: 0, invested: 0 }])
   );
   const staleUnits: StaleUnit[] = [];
   const brandMap = new Map<string, { count: number; invested: number }>();

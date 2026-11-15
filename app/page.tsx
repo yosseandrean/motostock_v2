@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { formatDateDisplay } from "@/lib/calendar";
 import type { InventoryUnit } from "@/lib/unit";
 import { InventoryList } from "@/app/inventory-list";
 import { SiteNav } from "@/app/site-nav";
@@ -31,8 +32,9 @@ export default async function InventoryPage() {
     buyPrice: unit.buyPrice,
     cost: unit.cost,
     sellPrice: unit.sellPrice,
-    dateBoughtLabel: unit.dateBought.toLocaleDateString("id-ID"),
-    dateSoldLabel: unit.dateSold?.toLocaleDateString("id-ID") ?? null,
+    dateBoughtLabel: formatDateDisplay(unit.dateBought),
+    dateSoldLabel:
+      unit.dateSold === null ? null : formatDateDisplay(unit.dateSold),
   }));
 
   return (

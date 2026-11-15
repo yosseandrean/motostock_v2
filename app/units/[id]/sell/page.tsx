@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { listSalesPersons } from "@/lib/catalog";
-import { dateOnlyWib } from "@/lib/unit-sell";
+import { wibDateKey } from "@/lib/calendar";
 import { parseRecord } from "../../unit-form";
 import { SellFields } from "../../sell-fields";
 import { SiteNav } from "@/app/site-nav";
@@ -49,7 +49,7 @@ export default async function SellUnitPage({
   // Submitted values (from a validation round-trip) win over the defaults.
   const values = {
     sellPrice: submitted.sellPrice ?? "",
-    dateSold: submitted.dateSold ?? dateOnlyWib(new Date()),
+    dateSold: submitted.dateSold ?? wibDateKey(new Date()),
     salesPerson: submitted.salesPerson ?? unit.salesPerson ?? "",
   };
 

@@ -15,7 +15,7 @@ const inStock: InventoryUnit = {
   buyPrice: 10_000_000,
   cost: 500_000,
   sellPrice: null,
-  dateBoughtLabel: "1 Januari 2026",
+  dateBoughtLabel: "1/1/2026",
   dateSoldLabel: null,
 };
 
@@ -27,7 +27,7 @@ const sold: InventoryUnit = {
   buyPrice: 20_000_000,
   cost: 1_000_000,
   sellPrice: 25_000_000,
-  dateSoldLabel: "1 Desember 2025",
+  dateSoldLabel: "1/12/2025",
 };
 
 function render(units: InventoryUnit[]): string {
@@ -37,7 +37,7 @@ function render(units: InventoryUnit[]): string {
 function headerTexts(html: string): string[] {
   const thead = html.match(/<thead>([\s\S]*?)<\/thead>/)?.[1] ?? "";
   return [...thead.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/g)].map(
-    (match) => match[1],
+    (match) => match[1]
   );
 }
 
@@ -46,7 +46,7 @@ function rowCells(html: string, rowIndex = 1): string[] {
   const rows = [...tbody.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)];
   const row = rows[rowIndex - 1]?.[1] ?? "";
   return [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(
-    (match) => match[1],
+    (match) => match[1]
   );
 }
 
@@ -69,6 +69,10 @@ describe("InventoryList", () => {
     expect(html).toContain('tabindex="0"');
     expect(html).not.toContain('href="/units/1"');
     expect(html).not.toContain('href="/units/2"');
+
+    // Tanggal Beli / Tanggal Jual render the deterministic WIB d/m/yyyy labels.
+    expect(html).toContain("1/1/2026");
+    expect(html).toContain("1/12/2025");
   });
 
   it("orders columns Status-first and labels Invested/Gross Profit as Modal/Laba Kotor", () => {
@@ -94,7 +98,7 @@ describe("InventoryList", () => {
     const html = render([inStock, sold]);
 
     expect(html).toMatch(
-      /title="Harga Beli Rp\u00a010\.000\.000 · Biaya Rp\u00a0500\.000"/,
+      /title="Harga Beli Rp\u00a010\.000\.000 · Biaya Rp\u00a0500\.000"/
     );
 
     const firstRow = rowCells(html, 1);

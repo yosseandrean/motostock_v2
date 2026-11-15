@@ -1,6 +1,6 @@
 import { collapseWhitespace, normalizeUpperCase } from "@/lib/inventory-csv";
-import { parseDateOnly, parseOptionalInt } from "@/lib/unit-form-parse";
-import { WIB_OFFSET_MS } from "@/lib/sales";
+import { parseDateOnly } from "@/lib/calendar";
+import { parseOptionalInt } from "@/lib/unit-form-parse";
 
 /** The three raw string values submitted by the sell form. */
 export type SellFormValues = {
@@ -19,8 +19,7 @@ export type SellFormData = {
 export type SellFormErrors = Partial<Record<keyof SellFormValues, string>>;
 
 export type SellFormResult =
-  | { ok: true; data: SellFormData }
-  | { ok: false; errors: SellFormErrors };
+  { ok: true; data: SellFormData } | { ok: false; errors: SellFormErrors };
 
 /** Read the three raw string fields out of a submitted FormData. */
 export function readSellForm(formData: FormData): SellFormValues {
@@ -78,9 +77,4 @@ export function parseSellForm(values: SellFormValues): SellFormResult {
       salesPerson,
     },
   };
-}
-
-/** The WIB calendar date of `now`, as a `YYYY-MM-DD` string. */
-export function dateOnlyWib(now: Date): string {
-  return new Date(now.getTime() + WIB_OFFSET_MS).toISOString().slice(0, 10);
 }

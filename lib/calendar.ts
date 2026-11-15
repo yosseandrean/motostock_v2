@@ -81,6 +81,12 @@ export function formatDateDisplay(date: Date): string {
   return `${day}/${monthIndex + 1}/${year}`;
 }
 
+/** The WIB calendar date of an instant, as a sortable `YYYY-MM-DD` key. */
+export function wibDateKey(date: Date): string {
+  const { year, monthIndex, day } = wibDateParts(date);
+  return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
 /** Indonesian month names, January first. */
 export const ID_MONTHS = [
   "Januari",

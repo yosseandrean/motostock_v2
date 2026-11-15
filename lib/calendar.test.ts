@@ -10,6 +10,7 @@ import {
   monthLabel,
   parseDateOnly,
   WIB_OFFSET_MS,
+  wibDateKey,
   wibDateParts,
   wibDayStart,
   wibMidnightUtc,
@@ -101,6 +102,17 @@ describe("formatDateDisplay", () => {
     expect(formatDateDisplay(new Date("2026-10-31T23:00:00.000Z"))).toBe(
       "1/11/2026"
     );
+  });
+});
+
+describe("wibDateKey", () => {
+  it("renders a deterministic YYYY-MM-DD in WIB", () => {
+    expect(wibDateKey(new Date("2026-11-01T00:00:00.000Z"))).toBe("2026-11-01");
+    expect(wibDateKey(new Date("2026-01-05T00:00:00.000Z"))).toBe("2026-01-05");
+  });
+
+  it("uses the WIB day, not the server's local day", () => {
+    expect(wibDateKey(new Date("2026-10-31T23:00:00.000Z"))).toBe("2026-11-01");
   });
 });
 
