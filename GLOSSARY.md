@@ -2,7 +2,7 @@
 
 Tracks the secondhand motorcycle inventory and sales of a dealership: which units are in stock, what each cost, and what sold units earned.
 
-Canonical terms are English; user-facing labels are Indonesian. Each entry lists its Indonesian label under `_UI_`. `_Avoid_` terms are not to be used *as the canonical term*.
+Canonical terms are English; user-facing labels are Indonesian. Each entry lists its Indonesian label under `_UI_`. `_Avoid_` terms are not to be used _as the canonical term_.
 
 ## Language
 
@@ -61,8 +61,11 @@ _UI_: Laba Kotor
 Gross Profit divided by Sell Price, for a Sold Unit.
 _Avoid_: Markup, profit percentage
 
+**Calendar**:
+The WIB (UTC+7) civil calendar the dealership runs on — the day and month boundaries used to date a sale, count a Unit's Age, and render dates.
+
 **Age**:
-For an In Stock Unit, the number of days since Date Bought.
+For an In Stock Unit, the number of days since Date Bought, counted on the Calendar.
 _Avoid_: Days in stock, holding period
 
 **Stale**:

@@ -4,10 +4,11 @@ Read during review (the Standards axis of `/code-review`). The Fowler smell base
 
 ## Testing seam
 
-The app is tested through **one seam: the HTTP surface against a real SQLite database**. Tests drive routes — route handlers, server actions, and server-rendered pages — against a throwaway SQLite database seeded per test.
+The app is tested through the **HTTP surface against a real SQLite database**. Tests drive routes — route handlers, server actions, and server-rendered pages — against a throwaway SQLite database seeded per test.
 
 - **External behavior only.** Assert on what a client observes: server-rendered HTML (summary figures, chart data serialized into the page, links) and route responses and redirects.
-- **Internal** means exported helper functions and component internals. These are exercised _through_ the seam, never unit-tested separately; a `renderToString`-driven component test also reaches below it.
+- **Pages and route handlers are exercised _through_ the HTTP seam, never unit-tested separately**; a `renderToString`-driven component test also reaches below it.
+- **Pure in-process modules (the Calendar) are tested directly at their interface; the Unit write module is tested through its interface against the throwaway SQLite.** Their interface is the test surface; the HTTP tests still assert the same rules through user-visible output.
 - **Calculation rules surface through user-visible output** (Modal, Laba Kotor, Margin, Age, Stale, WIB period boundaries), not through the function that computes them.
 - The tested surfaces are all HTTP: login/logout and protected-route redirects, Unit create/read/update/delete with derived Status and validation errors, CSV import/export, the inventory dashboard, the sales dashboard per period preset, and the data-issues checklist.
 
