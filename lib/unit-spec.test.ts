@@ -2,8 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   CSV_HEADERS,
   parseImportRow,
+  parseUnitForm,
+  readUnitForm,
   UNIT_FIELDS,
   unitRecordToCsvRow,
+  unitRecordToFormValues,
 } from "@/lib/unit-spec";
 import type { UnitRecord } from "@/lib/unit-spec";
 
@@ -440,5 +443,156 @@ describe("parseImportRow", () => {
         "",
       ])
     ).toEqual({ ok: false, reason: "invalid Date Sold" });
+  });
+});
+
+describe("readUnitForm", () => {
+  it("reads every field key out of the submitted FormData", () => {
+    const formData = new FormData();
+    for (const field of UNIT_FIELDS) {
+      formData.set(field.key, field.key.toUpperCase());
+    }
+
+    const values = readUnitForm(formData);
+
+    expect(Object.keys(values)).toEqual(UNIT_FIELDS.map((field) => field.key));
+    expect(values.brand).toBe("BRAND");
+    expect(values.notes).toBe("NOTES");
+  });
+
+  it("reads an absent field as an empty string", () => {
+    expect(readUnitForm(new FormData()).licensePlate).toBe("");
+  });
+});
+
+describe("unitRecordToFormValues", () => {
+  it("serializes a record to raw form strings, nulls as empty strings", () => {
+    const values = unitRecordToFormValues(sampleRecord);
+
+    expect(values.brand).toBe("HONDA");
+    expect(values.buyPrice).toBe("10000000");
+    expect(values.sellPrice).toBe("");
+    expect(values.dateBought).toBe("2026-01-01");
+    expect(values.dateSold).toBe("");
+    expect(values.chassisSerialNumber).toBe("MH1ABC123");
+  });
+});
+
+describe("parseUnitForm", () => {
+  const minimalForm = {
+    brand: "HONDA",
+    model: "BEAT",
+    modelYear: "2023",
+    licensePlate: "B 1 AAA",
+    color: "",
+    buyPrice: "10000000",
+    cost: "",
+    sellPrice: "",
+    dateBought: "2026-01-01",
+    dateSold: "",
+    salesPerson: "",
+    nameOnRegistration: "",
+    chassisSerialNumber: "",
+    engineSerialNumber: "",
+    boughtFrom: "",
+    notes: "",
+  };
+
+  it("parses the minimal In Stock form into the canonical record", () => {
+    const result = parseUnitForm(minimalForm);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data).toEqual({
+        brand: "HONDA",
+        model: "BEAT",
+        modelYear: "2023",
+        licensePlate: "B 1 AAA",
+        color: "",
+        buyPrice: 10_000_000,
+        cost: 0,
+        sellPrice: null,
+        dateBought: new Date("2026-01-01T00:00:00.000Z"),
+        dateSold: null,
+        salesPerson: null,
+        nameOnRegistration: null,
+        chassisSerialNumber: null,
+        engineSerialNumber: null,
+        boughtFrom: null,
+        notes: null,
+      });
+    }
+  });
+
+  it("uppercases Brand, Model, Color and Sales Person", () => {
+    const result = parseUnitForm({
+      ...minimalForm,
+      brand: " honda ",
+      model: " beat  deluxe ",
+      color: " merah ",
+      salesPerson: " hasan ",
+    });
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.data.brand).toBe("HONDA");
+      expect(result.data.model).toBe("BEAT DELUXE");
+      expect(result.data.color).toBe("MERAH");
+      expect(result.data.salesPerson).toBe("HASAN");
+    }
+  });
+
+  it("rejects missing required fields with Indonesian labels", () => {
+    const result = parseUnitForm({
+      ...minimalForm,
+      brand: "",
+      model: "",
+      licensePlate: "",
+      buyPrice: "",
+      dateBought: "",
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.brand).toBe("Merek wajib diisi");
+      expect(result.errors.model).toBe("Model wajib diisi");
+      expect(result.errors.licensePlate).toBe("Plat wajib diisi");
+      expect(result.errors.buyPrice).toBe("Harga Beli wajib diisi");
+      expect(result.errors.dateBought).toBe("Tanggal Beli wajib diisi");
+    }
+  });
+
+  it("rejects invalid integers, dates and Model Year", () => {
+    const result = parseUnitForm({
+      ...minimalForm,
+      buyPrice: "sepuluh juta",
+      dateBought: "01/01/2026",
+      modelYear: "abc",
+    });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors.buyPrice).toBe("Harga Beli harus angka");
+      expect(result.errors.dateBought).toBe("Tanggal Beli tidak valid");
+      expect(result.errors.modelYear).toBe("Tahun tidak valid");
+    }
+  });
+
+  it("keeps Sell Price and Date Sold as a pair", () => {
+    const sellOnly = parseUnitForm({ ...minimalForm, sellPrice: "12500000" });
+    expect(sellOnly.ok).toBe(false);
+    if (!sellOnly.ok) {
+      expect(sellOnly.errors.dateSold).toBe(
+        "Tanggal Jual wajib diisi bersama Harga Jual"
+      );
+    }
+
+    const dateOnly = parseUnitForm({ ...minimalForm, dateSold: "2026-03-01" });
+    expect(dateOnly.ok).toBe(false);
+    if (!dateOnly.ok) {
+      expect(dateOnly.errors.sellPrice).toBe(
+        "Harga Jual wajib diisi bersama Tanggal Jual"
+      );
+    }
   });
 });

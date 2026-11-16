@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { parseCsv } from "@/lib/csv";
-import { parseImportRow, unitRecordToCsvRow } from "@/lib/inventory-csv";
-import type { UnitRecord } from "@/lib/inventory-csv";
+import { parseImportRow, unitRecordToCsvRow } from "@/lib/unit-spec";
+import type { UnitRecord } from "@/lib/unit-spec";
 
 export type ImportReport = {
   imported: number;
@@ -59,7 +59,9 @@ export async function importInventoryCsv(text: string): Promise<ImportReport> {
         report.skipped += 1;
         continue;
       }
-    } else if (existingNoChassisKeys.has(JSON.stringify(unitRecordToCsvRow(data)))) {
+    } else if (
+      existingNoChassisKeys.has(JSON.stringify(unitRecordToCsvRow(data)))
+    ) {
       report.skipped += 1;
       continue;
     }

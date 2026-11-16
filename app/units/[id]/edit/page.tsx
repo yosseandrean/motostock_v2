@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { formatDateOnly } from "@/lib/inventory-csv";
+import { unitRecordToFormValues } from "@/lib/unit-spec";
 import { parseRecord, UnitForm } from "../../unit-form";
 import {
   listBoughtFrom,
@@ -60,30 +60,9 @@ export default async function EditUnitPage({
   }
 
   // Submitted values (from a validation round-trip) win over the stored ones.
-  const values = {
-    brand: submitted.brand ?? unit.brand,
-    model: submitted.model ?? unit.model,
-    modelYear: submitted.modelYear ?? unit.modelYear,
-    licensePlate: submitted.licensePlate ?? unit.licensePlate,
-    color: submitted.color ?? unit.color,
-    buyPrice: submitted.buyPrice ?? String(unit.buyPrice),
-    cost: submitted.cost ?? String(unit.cost),
-    sellPrice:
-      submitted.sellPrice ??
-      (unit.sellPrice === null ? "" : String(unit.sellPrice)),
-    dateBought: submitted.dateBought ?? formatDateOnly(unit.dateBought),
-    dateSold:
-      submitted.dateSold ??
-      (unit.dateSold === null ? "" : formatDateOnly(unit.dateSold)),
-    salesPerson: submitted.salesPerson ?? unit.salesPerson ?? "",
-    nameOnRegistration:
-      submitted.nameOnRegistration ?? unit.nameOnRegistration ?? "",
-    chassisSerialNumber:
-      submitted.chassisSerialNumber ?? unit.chassisSerialNumber ?? "",
-    engineSerialNumber:
-      submitted.engineSerialNumber ?? unit.engineSerialNumber ?? "",
-    boughtFrom: submitted.boughtFrom ?? unit.boughtFrom ?? "",
-    notes: submitted.notes ?? unit.notes ?? "",
+  const values: Record<string, string> = {
+    ...unitRecordToFormValues(unit),
+    ...submitted,
   };
 
   const [brands, models, colors, salesPersons, boughtFroms] = await Promise.all(
@@ -93,7 +72,7 @@ export default async function EditUnitPage({
       listColors(),
       listSalesPersons(),
       listBoughtFrom(),
-    ],
+    ]
   );
 
   return (

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { parseUnitForm, readUnitForm } from "@/lib/unit-create";
+import { parseUnitForm, readUnitForm } from "@/lib/unit-spec";
 import { externalOrigin } from "@/lib/request-url";
 
 type Params = {
@@ -10,10 +10,13 @@ type Params = {
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<Params> },
+  { params }: { params: Promise<Params> }
 ) {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.redirect(new URL("/login", externalOrigin(request)), 303);
+    return NextResponse.redirect(
+      new URL("/login", externalOrigin(request)),
+      303
+    );
   }
 
   const { id } = await params;
@@ -32,10 +35,13 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<Params> },
+  { params }: { params: Promise<Params> }
 ) {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.redirect(new URL("/login", externalOrigin(request)), 303);
+    return NextResponse.redirect(
+      new URL("/login", externalOrigin(request)),
+      303
+    );
   }
 
   const { id } = await params;

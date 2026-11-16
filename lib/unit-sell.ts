@@ -1,6 +1,9 @@
-import { collapseWhitespace, normalizeUpperCase } from "@/lib/inventory-csv";
+import {
+  collapseWhitespace,
+  normalizeUpperCase,
+  parseOptionalInt,
+} from "@/lib/unit-spec";
 import { parseDateOnly } from "@/lib/calendar";
-import { parseOptionalInt } from "@/lib/unit-form-parse";
 
 /** The three raw string values submitted by the sell form. */
 export type SellFormValues = {

@@ -2,35 +2,33 @@
 
 import { useEffect, useState } from "react";
 import { formatIDR } from "@/lib/format";
+import { formatDateDisplay } from "@/lib/calendar";
+import { UNIT_FIELDS } from "@/lib/unit-spec";
+import type { UnitField, UnitRecordJson } from "@/lib/unit-spec";
 
 /** A Unit as returned by GET /api/units/[id]. Dates arrive as ISO strings. */
-type UnitDetail = {
-  id: number;
-  brand: string;
-  model: string;
-  modelYear: string;
-  licensePlate: string;
-  color: string;
-  buyPrice: number;
-  cost: number;
-  sellPrice: number | null;
-  dateBought: string;
-  dateSold: string | null;
-  salesPerson: string | null;
-  nameOnRegistration: string | null;
-  chassisSerialNumber: string | null;
-  engineSerialNumber: string | null;
-  boughtFrom: string | null;
-  notes: string | null;
-};
+type UnitDetail = UnitRecordJson;
 
-function formatDate(value: string | null): string {
-  return value === null ? "" : new Date(value).toLocaleDateString("id-ID");
+/** Render one field value as the dialog displays it, from the field's type. */
+function formatValue(field: UnitField, value: string | number | null): string {
+  switch (field.type) {
+    case "int":
+    case "int-zero":
+      return formatIDR(value as number);
+    case "int-null":
+      return value === null ? "" : formatIDR(value as number);
+    case "date":
+      return formatDateDisplay(new Date(value as string));
+    case "date-null":
+      return value === null ? "" : formatDateDisplay(new Date(value as string));
+    default:
+      return value === null ? "" : String(value);
+  }
 }
 
 /**
- * The loaded detail view: every Unit field plus the Ubah link and, for an
- * In Stock Unit, the Jual link to the sell form.
+ * The loaded detail view: every Unit field (derived from the field list) plus
+ * the Ubah link and, for an In Stock Unit, the Jual link to the sell form.
  */
 function UnitDetailView({
   unit,
@@ -39,27 +37,10 @@ function UnitDetailView({
   unit: UnitDetail;
   unitId: number;
 }) {
-  const fields = [
-    { label: "Merek", value: unit.brand },
-    { label: "Model", value: unit.model },
-    { label: "Tahun", value: unit.modelYear },
-    { label: "Plat", value: unit.licensePlate },
-    { label: "Warna", value: unit.color },
-    { label: "Harga Beli", value: formatIDR(unit.buyPrice) },
-    { label: "Biaya", value: formatIDR(unit.cost) },
-    {
-      label: "Harga Jual",
-      value: unit.sellPrice === null ? "" : formatIDR(unit.sellPrice),
-    },
-    { label: "Tanggal Beli", value: formatDate(unit.dateBought) },
-    { label: "Tanggal Jual", value: formatDate(unit.dateSold) },
-    { label: "Sales Person", value: unit.salesPerson ?? "" },
-    { label: "Nama di STNK", value: unit.nameOnRegistration ?? "" },
-    { label: "Nomor Rangka", value: unit.chassisSerialNumber ?? "" },
-    { label: "Nomor Mesin", value: unit.engineSerialNumber ?? "" },
-    { label: "Dibeli Dari", value: unit.boughtFrom ?? "" },
-    { label: "Catatan", value: unit.notes ?? "" },
-  ];
+  const fields = UNIT_FIELDS.map((field) => ({
+    label: field.label,
+    value: formatValue(field, unit[field.key]),
+  }));
 
   return (
     <>

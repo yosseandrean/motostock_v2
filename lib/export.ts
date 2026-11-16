@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { toCsv } from "@/lib/csv";
-import { CSV_HEADERS, unitRecordToCsvRow } from "@/lib/inventory-csv";
+import { CSV_HEADERS, unitRecordToCsvRow } from "@/lib/unit-spec";
 import { wibDateKey } from "@/lib/calendar";
 
 /** `inventory-<YYYY-MM-DD>.csv` for the export date in WIB (UTC+7). */

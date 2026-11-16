@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import { isAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { parseUnitForm, readUnitForm } from "@/lib/unit-create";
+import { parseUnitForm, readUnitForm } from "@/lib/unit-spec";
 import { externalOrigin } from "@/lib/request-url";
 
 export async function POST(request: Request) {
   if (!(await isAuthenticated(request))) {
-    return NextResponse.redirect(new URL("/login", externalOrigin(request)), 303);
+    return NextResponse.redirect(
+      new URL("/login", externalOrigin(request)),
+      303
+    );
   }
 
   const values = readUnitForm(await request.formData());

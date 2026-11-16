@@ -22,7 +22,11 @@ export function parseRecord(raw: string | undefined): Record<string, string> {
   }
   try {
     const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+    if (
+      typeof parsed === "object" &&
+      parsed !== null &&
+      !Array.isArray(parsed)
+    ) {
       return parsed as Record<string, string>;
     }
     return {};
@@ -33,14 +37,14 @@ export function parseRecord(raw: string | undefined): Record<string, string> {
 
 function errorFor(
   errors: Record<string, string>,
-  field: string,
+  field: string
 ): string | undefined {
   return errors[field];
 }
 
 /**
  * The 16-field Unit form, shared by the create and edit pages. Validation and
- * normalization live in `parseUnitForm` (see lib/unit-create.ts); this
+ * normalization live in `parseUnitForm` (see lib/unit-spec.ts); this
  * component only renders fields, catalogs, and any errors/values passed in.
  */
 export function UnitForm({
