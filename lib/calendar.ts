@@ -87,6 +87,12 @@ export function wibDateKey(date: Date): string {
   return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
+/** The WIB calendar month of an instant, as a sortable `YYYY-MM` key. */
+export function monthKey(date: Date): string {
+  const { year, monthIndex } = wibDateParts(date);
+  return `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+}
+
 /** Indonesian month names, January first. */
 export const ID_MONTHS = [
   "Januari",

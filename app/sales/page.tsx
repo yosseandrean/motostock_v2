@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { formatIDR, formatPercent } from "@/lib/format";
-import {
-  computeSalesSummary,
-  parseDateOnly,
-  resolvePeriod,
-  SALES_PRESETS,
-} from "@/lib/sales";
+import { parseDateOnly } from "@/lib/calendar";
+import { computeSalesSummary, resolvePeriod, SALES_PRESETS } from "@/lib/sales";
 import type { SalesBreakdownRow, SalesPresetKey } from "@/lib/sales";
 import { TREND_CHART_SERIES } from "@/lib/trend-chart";
 import { MonthlyTrendChart } from "./MonthlyTrendChart";
@@ -86,8 +82,8 @@ export default async function SalesDashboardPage({
 
   const customValid =
     preset === "custom" &&
-    parseDateOnly(from) !== null &&
-    parseDateOnly(to) !== null;
+    parseDateOnly(from) instanceof Date &&
+    parseDateOnly(to) instanceof Date;
   // An incomplete Custom range falls back to This month rather than All time.
   const period = customValid
     ? resolvePeriod("custom", now, { from, to })

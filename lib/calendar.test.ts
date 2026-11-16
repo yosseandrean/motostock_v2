@@ -7,6 +7,7 @@ import {
   ID_DAYS_SHORT,
   ID_MONTHS,
   ID_MONTHS_SHORT,
+  monthKey,
   monthLabel,
   parseDateOnly,
   WIB_OFFSET_MS,
@@ -113,6 +114,13 @@ describe("wibDateKey", () => {
 
   it("uses the WIB day, not the server's local day", () => {
     expect(wibDateKey(new Date("2026-10-31T23:00:00.000Z"))).toBe("2026-11-01");
+  });
+});
+
+describe("monthKey", () => {
+  it("maps a stored date to its WIB calendar month", () => {
+    expect(monthKey(new Date("2026-11-01T00:00:00.000Z"))).toBe("2026-11");
+    expect(monthKey(new Date("2026-10-31T23:00:00.000Z"))).toBe("2026-11");
   });
 });
 

@@ -6,10 +6,17 @@
  * sales page and its tests share one source of truth.
  */
 
+import {
+  ID_MONTHS_SHORT,
+  monthKey,
+  monthLabel,
+  parseDateOnly,
+  wibDateKey,
+  wibDateParts,
+  wibMidnightUtc,
+  wibMonthStart,
+} from "@/lib/calendar";
 import { grossProfit } from "@/lib/unit";
-
-/** WIB (Western Indonesian Time) is UTC+7. */
-export const WIB_OFFSET_MS = 7 * 60 * 60 * 1000;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WEEK_MS = 7 * DAY_MS;
@@ -84,71 +91,6 @@ export type SalesSummary = {
   losses: SalesLoss[];
 };
 
-const ID_MONTHS = [
-  "Januari",
-  "Februari",
-  "Maret",
-  "April",
-  "Mei",
-  "Juni",
-  "Juli",
-  "Agustus",
-  "September",
-  "Oktober",
-  "November",
-  "Desember",
-] as const;
-
-const ID_MONTHS_SHORT = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "Mei",
-  "Jun",
-  "Jul",
-  "Agu",
-  "Sep",
-  "Okt",
-  "Nov",
-  "Des",
-] as const;
-
-/** The UTC instant of a WIB-midnight calendar day (year/monthIndex/day). */
-export function wibMidnightUtc(
-  year: number,
-  monthIndex: number,
-  day: number,
-): Date {
-  return new Date(Date.UTC(year, monthIndex, day) - WIB_OFFSET_MS);
-}
-
-/** Parse a `YYYY-MM-DD` string into UTC midnight, or null when invalid. */
-export function parseDateOnly(value: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) {
-    return null;
-  }
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  if (
-    date.getUTCFullYear() !== year ||
-    date.getUTCMonth() !== month - 1 ||
-    date.getUTCDate() !== day
-  ) {
-    return null;
-  }
-  return date;
-}
-
-/** The WIB calendar month of `now`, as `{ year, monthIndex }`. */
-function wibMonthOf(now: Date): { year: number; monthIndex: number } {
-  const wib = new Date(now.getTime() + WIB_OFFSET_MS);
-  return { year: wib.getUTCFullYear(), monthIndex: wib.getUTCMonth() };
-}
-
 /**
  * Resolve a preset into a half-open period of UTC instants aligned to WIB
  * midnights. `custom` needs both a from and a to `YYYY-MM-DD`; the days are
@@ -157,14 +99,14 @@ function wibMonthOf(now: Date): { year: number; monthIndex: number } {
 export function resolvePeriod(
   preset: SalesPresetKey,
   now: Date,
-  custom?: { from: string; to: string },
+  custom?: { from: string; to: string }
 ): SalesPeriod {
-  const { year, monthIndex } = wibMonthOf(now);
+  const { year, monthIndex } = wibDateParts(now);
 
   switch (preset) {
     case "this-month":
       return {
-        from: wibMidnightUtc(year, monthIndex, 1),
+        from: wibMonthStart(now),
         to: wibMidnightUtc(year, monthIndex + 1, 1),
       };
     case "last-month":
@@ -187,49 +129,23 @@ export function resolvePeriod(
     case "custom": {
       const from = custom ? parseDateOnly(custom.from) : null;
       const to = custom ? parseDateOnly(custom.to) : null;
-      if (!from || !to) {
+      if (!(from instanceof Date) || !(to instanceof Date)) {
         return { from: null, to: null };
       }
       return {
-        from: wibMidnightUtc(from.getUTCFullYear(), from.getUTCMonth(), from.getUTCDate()),
-        to: wibMidnightUtc(to.getUTCFullYear(), to.getUTCMonth(), to.getUTCDate() + 1),
+        from: wibMidnightUtc(
+          from.getUTCFullYear(),
+          from.getUTCMonth(),
+          from.getUTCDate()
+        ),
+        to: wibMidnightUtc(
+          to.getUTCFullYear(),
+          to.getUTCMonth(),
+          to.getUTCDate() + 1
+        ),
       };
     }
   }
-}
-
-/** The WIB calendar month of a date, as a `YYYY-MM` key. */
-export function monthKey(date: Date): string {
-  const wib = new Date(date.getTime() + WIB_OFFSET_MS);
-  const year = wib.getUTCFullYear();
-  const month = String(wib.getUTCMonth() + 1).padStart(2, "0");
-  return `${year}-${month}`;
-}
-
-/** The Indonesian label for a `YYYY-MM` month key. */
-export function monthLabel(key: string): string {
-  const [year, month] = key.split("-").map(Number);
-  return `${ID_MONTHS[month - 1]} ${year}`;
-}
-
-/** The WIB calendar parts (year, monthIndex, day) of a UTC instant. */
-function wibCalendar(date: Date): {
-  year: number;
-  monthIndex: number;
-  day: number;
-} {
-  const wib = new Date(date.getTime() + WIB_OFFSET_MS);
-  return {
-    year: wib.getUTCFullYear(),
-    monthIndex: wib.getUTCMonth(),
-    day: wib.getUTCDate(),
-  };
-}
-
-/** The WIB calendar date of a UTC instant, as a stable `YYYY-MM-DD` key. */
-function weekDateKey(date: Date): string {
-  const { year, monthIndex, day } = wibCalendar(date);
-  return `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 /** The start of the `index`-th 7-day window after the period start. */
@@ -240,7 +156,7 @@ function weekStart(from: Date, index: number): Date {
 /** The key of the weekly bucket a sale falls into, anchored at `from`. */
 function weekBucketKey(from: Date, dateSold: Date): string {
   const index = Math.floor((dateSold.getTime() - from.getTime()) / WEEK_MS);
-  return weekDateKey(weekStart(from, index));
+  return wibDateKey(weekStart(from, index));
 }
 
 /** True when `period` should be bucketed weekly rather than monthly. */
@@ -253,13 +169,17 @@ function isWeeklyPeriod(period: SalesPeriod): boolean {
 }
 
 /** Short Indonesian day range for a weekly bucket, clipped to the period. */
-function weekBucketLabel(from: Date, index: number, period: SalesPeriod): string {
+function weekBucketLabel(
+  from: Date,
+  index: number,
+  period: SalesPeriod
+): string {
   const start = weekStart(from, index);
   const end = new Date(
-    Math.min(start.getTime() + WEEK_MS, (period.to as Date).getTime()),
+    Math.min(start.getTime() + WEEK_MS, (period.to as Date).getTime())
   );
-  const startParts = wibCalendar(start);
-  const endParts = wibCalendar(new Date(end.getTime() - 1));
+  const startParts = wibDateParts(start);
+  const endParts = wibDateParts(new Date(end.getTime() - 1));
   const startMonth = ID_MONTHS_SHORT[startParts.monthIndex];
   const endMonth = ID_MONTHS_SHORT[endParts.monthIndex];
 
@@ -278,13 +198,17 @@ function weekBucketLabel(from: Date, index: number, period: SalesPeriod): string
 /** Enumerate weekly buckets across the period, zero-filling empty weeks. */
 function buildWeeklyTrend(
   buckets: Map<string, { revenue: number; grossProfit: number }>,
-  period: SalesPeriod,
+  period: SalesPeriod
 ): SalesTrendPoint[] {
   const from = period.from as Date;
   const to = period.to as Date;
   const points: SalesTrendPoint[] = [];
-  for (let index = 0; weekStart(from, index).getTime() < to.getTime(); index += 1) {
-    const key = weekDateKey(weekStart(from, index));
+  for (
+    let index = 0;
+    weekStart(from, index).getTime() < to.getTime();
+    index += 1
+  ) {
+    const key = wibDateKey(weekStart(from, index));
     const bucket = buckets.get(key);
     points.push({
       key,
@@ -297,7 +221,9 @@ function buildWeeklyTrend(
 }
 
 /** A Unit counts as a sale only when Sell Price and Date Sold are both set. */
-export function isSale(unit: Pick<SalesUnit, "sellPrice" | "dateSold">): boolean {
+export function isSale(
+  unit: Pick<SalesUnit, "sellPrice" | "dateSold">
+): boolean {
   return unit.sellPrice !== null && unit.dateSold !== null;
 }
 
@@ -312,7 +238,7 @@ function accumulate(
   map: Map<string, { count: number; revenue: number; grossProfit: number }>,
   key: string,
   revenue: number,
-  profit: number,
+  profit: number
 ): void {
   const existing = map.get(key);
   if (existing === undefined) {
@@ -325,7 +251,7 @@ function accumulate(
 }
 
 function toBreakdown(
-  map: Map<string, { count: number; revenue: number; grossProfit: number }>,
+  map: Map<string, { count: number; revenue: number; grossProfit: number }>
 ): SalesBreakdownRow[] {
   return [...map.entries()]
     .map(([key, value]) => ({ key, ...value }))
@@ -344,7 +270,7 @@ function enumerateMonthKeys(fromKey: string, toKey: string): string[] {
   let year = from.year;
   let month = from.month;
   while (year < to.year || (year === to.year && month <= to.month)) {
-    keys.push(`${year}-${String(month).padStart(2, "0")}`);
+    keys.push(monthKey(wibMidnightUtc(year, month - 1, 1)));
     month += 1;
     if (month > 12) {
       month = 1;
@@ -364,21 +290,33 @@ function enumerateMonthKeys(fromKey: string, toKey: string): string[] {
  */
 export function computeSalesSummary(
   units: readonly SalesUnit[],
-  period: SalesPeriod,
+  period: SalesPeriod
 ): SalesSummary {
   const sales = units.filter(
     (unit): unit is SalesUnit =>
-      isSale(unit) && unit.dateSold !== null && inPeriod(unit.dateSold, period),
+      isSale(unit) && unit.dateSold !== null && inPeriod(unit.dateSold, period)
   );
 
   let revenue = 0;
   let totalProfit = 0;
   let marginSum = 0;
   let marginCount = 0;
-  const brandMap = new Map<string, { count: number; revenue: number; grossProfit: number }>();
-  const modelMap = new Map<string, { count: number; revenue: number; grossProfit: number }>();
-  const personMap = new Map<string, { count: number; revenue: number; grossProfit: number }>();
-  const trendBuckets = new Map<string, { revenue: number; grossProfit: number }>();
+  const brandMap = new Map<
+    string,
+    { count: number; revenue: number; grossProfit: number }
+  >();
+  const modelMap = new Map<
+    string,
+    { count: number; revenue: number; grossProfit: number }
+  >();
+  const personMap = new Map<
+    string,
+    { count: number; revenue: number; grossProfit: number }
+  >();
+  const trendBuckets = new Map<
+    string,
+    { revenue: number; grossProfit: number }
+  >();
   const weekly = isWeeklyPeriod(period);
   const losses: SalesLoss[] = [];
 
