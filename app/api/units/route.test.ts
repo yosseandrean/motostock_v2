@@ -17,7 +17,7 @@ const REQUIRED = {
 
 async function submit(
   values: Record<string, string>,
-  authenticated = true,
+  authenticated = true
 ): Promise<Response> {
   const form = new FormData();
   for (const [key, value] of Object.entries(values)) {

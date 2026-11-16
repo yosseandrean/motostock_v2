@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { parseSellForm, readSellForm } from "@/lib/unit-sell";
-import { externalOrigin } from "@/lib/request-url";
+import { readSellForm } from "@/lib/unit-sell";
+import { sellUnit } from "@/lib/unit-write";
+import {
+  unitWriteRedirect,
+  withAuthenticatedUnitRequest,
+} from "@/lib/route-plumbing";
 
 type Params = {
   id: string;
@@ -10,44 +11,14 @@ type Params = {
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<Params> },
+  context: { params: Promise<Params> }
 ) {
-  if (!(await isAuthenticated(request))) {
-    return NextResponse.redirect(new URL("/login", externalOrigin(request)), 303);
-  }
-
-  const { id } = await params;
-  const numericId = Number(id);
-  if (!Number.isInteger(numericId) || numericId <= 0) {
-    return new NextResponse("Not found", { status: 404 });
-  }
-
-  const existing = await prisma.unit.findUnique({
-    where: { id: numericId },
-    select: { id: true },
+  return withAuthenticatedUnitRequest(request, context, async (id, origin) => {
+    const values = readSellForm(await request.formData());
+    const result = await sellUnit(id, values);
+    return unitWriteRedirect(origin, result, {
+      path: `/units/${id}/sell`,
+      values,
+    });
   });
-  if (existing === null) {
-    return new NextResponse("Not found", { status: 404 });
-  }
-
-  const values = readSellForm(await request.formData());
-  const parsed = parseSellForm(values);
-
-  if (!parsed.ok) {
-    const url = new URL(`/units/${numericId}/sell`, externalOrigin(request));
-    url.searchParams.set("errors", JSON.stringify(parsed.errors));
-    url.searchParams.set("values", JSON.stringify(values));
-    return NextResponse.redirect(url, 303);
-  }
-
-  await prisma.unit.update({
-    where: { id: numericId },
-    data: {
-      sellPrice: parsed.data.sellPrice,
-      dateSold: parsed.data.dateSold,
-      salesPerson: parsed.data.salesPerson,
-    },
-  });
-
-  return NextResponse.redirect(new URL("/", externalOrigin(request)), 303);
 }

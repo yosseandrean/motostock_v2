@@ -5,7 +5,7 @@ import { createTestDb } from "@/test/helpers";
 
 type RouteHandler = (
   request: Request,
-  context: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) => Promise<Response>;
 
 let prisma: PrismaClient;
@@ -32,7 +32,7 @@ async function seedUnit(overrides: Record<string, unknown> = {}) {
 async function submit(
   id: string | number,
   values: Record<string, string>,
-  authenticated = true,
+  authenticated = true
 ): Promise<Response> {
   const form = new FormData();
   for (const [key, value] of Object.entries(values)) {
@@ -114,7 +114,7 @@ describe("POST /api/units/[id]/sell", () => {
 
     expect(response.status).toBe(303);
     expect(response.headers.get("location")).toContain(
-      `/units/${unit.id}/sell`,
+      `/units/${unit.id}/sell`
     );
     expect(errorsFrom(response).sellPrice).toBeTruthy();
 
@@ -148,7 +148,7 @@ describe("POST /api/units/[id]/sell", () => {
     });
 
     expect(response.headers.get("location")).toContain(
-      `/units/${unit.id}/sell`,
+      `/units/${unit.id}/sell`
     );
     expect(errorsFrom(response).dateSold).toBeTruthy();
 
@@ -193,7 +193,7 @@ describe("POST /api/units/[id]/sell", () => {
         dateSold: "2026-03-01",
         salesPerson: "BUDI",
       },
-      false,
+      false
     );
 
     expect(response.status).toBe(303);

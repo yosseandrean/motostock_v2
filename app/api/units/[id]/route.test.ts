@@ -5,7 +5,7 @@ import { createTestDb } from "@/test/helpers";
 
 type RouteHandler = (
   request: Request,
-  context: { params: Promise<{ id: string }> },
+  context: { params: Promise<{ id: string }> }
 ) => Promise<Response>;
 
 let prisma: PrismaClient;
@@ -42,7 +42,7 @@ async function seedUnit(overrides: Record<string, unknown> = {}) {
 async function submit(
   id: string | number,
   values: Record<string, string>,
-  authenticated = true,
+  authenticated = true
 ): Promise<Response> {
   const form = new FormData();
   for (const [key, value] of Object.entries(values)) {
@@ -63,7 +63,7 @@ async function submit(
 
 async function get(
   id: string | number,
-  authenticated = true,
+  authenticated = true
 ): Promise<Response> {
   const headers = new Headers();
   if (authenticated) {
@@ -187,7 +187,9 @@ describe("POST /api/units/[id]", () => {
     });
 
     expect(response.status).toBe(303);
-    expect(response.headers.get("location")).toContain(`/units/${unit.id}/edit`);
+    expect(response.headers.get("location")).toContain(
+      `/units/${unit.id}/edit`
+    );
 
     const errors = errorsFrom(response);
     expect(errors.brand).toBeTruthy();
@@ -215,7 +217,7 @@ describe("POST /api/units/[id]", () => {
     });
 
     expect(response.headers.get("location")).toContain(
-      `/units/${unit.id}/edit`,
+      `/units/${unit.id}/edit`
     );
     expect(response.headers.get("location")).toContain("warning=chassis");
     const updated = await prisma.unit.findUnique({ where: { id: unit.id } });

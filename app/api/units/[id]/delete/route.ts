@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
-import { isAuthenticated } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { externalOrigin } from "@/lib/request-url";
+import { deleteUnit } from "@/lib/unit-write";
+import {
+  unitWriteRedirect,
+  withAuthenticatedUnitRequest,
+} from "@/lib/route-plumbing";
 
 type Params = {
   id: string;
@@ -9,26 +10,10 @@ type Params = {
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<Params> },
+  context: { params: Promise<Params> }
 ) {
-  if (!(await isAuthenticated(request))) {
-    return NextResponse.redirect(new URL("/login", externalOrigin(request)), 303);
-  }
-
-  const { id } = await params;
-  const numericId = Number(id);
-  if (!Number.isInteger(numericId) || numericId <= 0) {
-    return new NextResponse("Not found", { status: 404 });
-  }
-
-  const existing = await prisma.unit.findUnique({
-    where: { id: numericId },
-    select: { id: true },
+  return withAuthenticatedUnitRequest(request, context, async (id, origin) => {
+    const result = await deleteUnit(id);
+    return unitWriteRedirect(origin, result);
   });
-  if (existing === null) {
-    return new NextResponse("Not found", { status: 404 });
-  }
-
-  await prisma.unit.delete({ where: { id: numericId } });
-  return NextResponse.redirect(new URL("/", externalOrigin(request)), 303);
 }
